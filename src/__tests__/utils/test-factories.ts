@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { mockMovie, mockUser, mockWatchlistItem, mockWatchedItem } from './test-utils';
 
 // Movie factory
 export const createMockMovie = (overrides = {}) => ({
@@ -15,7 +14,6 @@ export const createMockMovie = (overrides = {}) => ({
   genres: faker.helpers.arrayElements(['Action', 'Adventure', 'Comedy', 'Drama', 'Horror', 'Romance', 'Sci-Fi', 'Thriller'], 2),
   runtime: faker.number.int({ min: 60, max: 180 }),
   status: faker.helpers.arrayElement(['Released', 'In Production', 'Post Production']),
-  ...mockMovie,
   ...overrides,
 });
 
@@ -26,7 +24,6 @@ export const createMockUser = (overrides = {}) => ({
   email: faker.internet.email(),
   image: faker.image.avatar(),
   emailVerified: faker.date.past(),
-  ...mockUser,
   ...overrides,
 });
 
@@ -41,7 +38,6 @@ export const createMockWatchlistItem = (overrides = {}) => ({
   priority: faker.helpers.arrayElement(['low', 'medium', 'high']),
   addedAt: faker.date.past(),
   notes: faker.lorem.sentence(),
-  ...mockWatchlistItem,
   ...overrides,
 });
 
@@ -57,7 +53,6 @@ export const createMockWatchedItem = (overrides = {}) => ({
   review: faker.lorem.paragraph(),
   watchedAt: faker.date.past(),
   rewatchCount: faker.number.int({ min: 0, max: 5 }),
-  ...mockWatchedItem,
   ...overrides,
 });
 

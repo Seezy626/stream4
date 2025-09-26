@@ -27,7 +27,7 @@ process.env.DATABASE_URL = 'postgresql://localhost:5432/test';
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, ...props }) => {
-    // eslint-disable-next-line jsx-a11y/alt-text
+     
     return <img src={src} alt={alt} {...props} />;
   },
 }));

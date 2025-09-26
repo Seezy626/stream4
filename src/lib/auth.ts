@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { compare } from 'bcryptjs';
 import { eq } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 import { db } from './db';
 import { users, accounts, sessions, verificationTokens } from './schema';
 import { UpstashRedisStore } from './upstash-redis-store';
@@ -22,7 +23,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },
@@ -91,6 +91,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!existingUser[0]) {
           await db.insert(users).values({
+            id: randomUUID(),
             email: user.email!,
             name: user.name,
             image: user.image,
@@ -106,7 +107,6 @@ export const authOptions: NextAuthOptions = {
       // Clean up any additional data on sign out
     },
   },
-  store: UpstashRedisStore(),
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === 'development',
 };

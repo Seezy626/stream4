@@ -3,7 +3,7 @@ import monitoring from '@/lib/monitoring';
 
 interface MonitoringEvent {
   type: 'error' | 'performance' | 'user_event';
-  data: any;
+  data: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -31,18 +31,21 @@ export async function POST(request: NextRequest) {
     // Process the event based on type
     switch (event.type) {
       case 'error':
-        monitoring.captureError(event.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        monitoring.captureError(event.data as any);
         break;
       case 'performance':
-        monitoring.capturePerformance(event.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        monitoring.capturePerformance(event.data as any);
         break;
       case 'user_event':
-        monitoring.trackUserEvent(event.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        monitoring.trackUserEvent(event.data as any);
         break;
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error processing monitoring event:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -62,7 +65,7 @@ export async function GET() {
       service: 'monitoring-service',
       health,
     });
-  } catch (error) {
+  } catch (_error: unknown) {
     return NextResponse.json(
       { error: 'Monitoring service unavailable' },
       { status: 503 }

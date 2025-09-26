@@ -10,8 +10,7 @@ import {
   Database,
   FileX,
   Clock,
-  HelpCircle,
-  ExternalLink
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,10 +39,10 @@ interface ErrorMessageProps {
 }
 
 const ERROR_CONFIG: Record<ErrorType, {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   defaultMessage: string;
-  color: 'destructive' | 'warning' | 'info';
+  color: 'default' | 'destructive';
 }> = {
   network: {
     icon: Wifi,
@@ -61,37 +60,37 @@ const ERROR_CONFIG: Record<ErrorType, {
     icon: Shield,
     title: 'Authentication Required',
     defaultMessage: 'Please sign in to continue accessing this feature.',
-    color: 'warning',
+    color: 'default',
   },
   authorization: {
     icon: Shield,
     title: 'Access Denied',
     defaultMessage: 'You don\'t have permission to access this resource.',
-    color: 'warning',
+    color: 'destructive',
   },
   validation: {
     icon: AlertTriangle,
     title: 'Invalid Input',
     defaultMessage: 'Please check your input and try again.',
-    color: 'warning',
+    color: 'default',
   },
   not_found: {
     icon: FileX,
     title: 'Not Found',
     defaultMessage: 'The resource you\'re looking for doesn\'t exist.',
-    color: 'info',
+    color: 'default',
   },
   timeout: {
     icon: Clock,
     title: 'Request Timeout',
     defaultMessage: 'The request took too long to complete. Please try again.',
-    color: 'warning',
+    color: 'default',
   },
   maintenance: {
     icon: RefreshCw,
     title: 'Under Maintenance',
     defaultMessage: 'We\'re currently performing maintenance. Please check back soon.',
-    color: 'info',
+    color: 'default',
   },
   unknown: {
     icon: AlertTriangle,
@@ -154,14 +153,12 @@ export function ErrorMessage({
         <div className={cn(
           'mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full',
           config.color === 'destructive' && 'bg-destructive/10',
-          config.color === 'warning' && 'bg-yellow-100 dark:bg-yellow-900/20',
-          config.color === 'info' && 'bg-blue-100 dark:bg-blue-900/20'
+          config.color === 'default' && 'bg-muted'
         )}>
           <Icon className={cn(
             'h-6 w-6',
             config.color === 'destructive' && 'text-destructive',
-            config.color === 'warning' && 'text-yellow-600 dark:text-yellow-400',
-            config.color === 'info' && 'text-blue-600 dark:text-blue-400'
+            config.color === 'default' && 'text-muted-foreground'
           )} />
         </div>
         <CardTitle className="text-xl">{displayTitle}</CardTitle>

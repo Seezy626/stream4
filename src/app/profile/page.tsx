@@ -11,9 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, Mail, Calendar, Film, Heart, Check } from "lucide-react"
+import { Calendar, Film, Heart, Check } from "lucide-react"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)

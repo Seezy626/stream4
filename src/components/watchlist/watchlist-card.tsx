@@ -22,7 +22,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/alert-dialog';
 import {
   Edit,
   Trash2,
@@ -223,7 +223,7 @@ export function WatchlistCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Remove from Watchlist</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "{item.movie.title}" from your watchlist?
+              Are you sure you want to remove &quot;{item.movie.title}&quot; from your watchlist?
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

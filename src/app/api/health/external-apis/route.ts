@@ -7,15 +7,13 @@ interface ApiHealthCheck {
   status: 'up' | 'down' | 'degraded';
   responseTime: number;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export async function GET() {
   const startTime = Date.now();
 
   try {
-    const config = configService.getConfig();
-
     // Check TMDB API
     const tmdbCheck = await checkTmdbApi();
 
@@ -63,7 +61,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    logger.error('External APIs health check endpoint error', error);
+    logger.error('External APIs health check endpoint error', error as Error);
 
     return NextResponse.json(
       {

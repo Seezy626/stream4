@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -35,7 +36,7 @@ import { WatchlistItem } from '@/state/types';
 
 const addToWatchlistSchema = z.object({
   movieId: z.number().min(1, 'Please select a movie'),
-  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  priority: z.enum(['low', 'medium', 'high']),
 });
 
 type AddToWatchlistFormData = z.infer<typeof addToWatchlistSchema>;
@@ -167,9 +168,11 @@ export function AddToWatchlistDialog({
                                 >
                                   <div className="flex items-center gap-3">
                                     {movie.poster_path && (
-                                      <img
+                                      <Image
                                         src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
                                         alt={movie.title}
+                                        width={48}
+                                        height={64}
                                         className="w-12 h-16 object-cover rounded"
                                       />
                                     )}
@@ -197,9 +200,11 @@ export function AddToWatchlistDialog({
                       {selectedMovie && (
                         <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                           {selectedMovie.poster_path && (
-                            <img
+                            <Image
                               src={`https://image.tmdb.org/t/p/w92${selectedMovie.poster_path}`}
                               alt={selectedMovie.title}
+                              width={48}
+                              height={64}
                               className="w-12 h-16 object-cover rounded"
                             />
                           )}

@@ -6,8 +6,6 @@ export async function GET() {
   const startTime = Date.now();
 
   try {
-    const config = configService.getConfig();
-
     // Check memory usage
     const memoryCheck = await checkMemoryUsage();
 
@@ -38,7 +36,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    logger.error('Memory health check endpoint error', error);
+    logger.error('Memory health check endpoint error', error as Error);
 
     return NextResponse.json(
       {
@@ -52,7 +50,7 @@ export async function GET() {
   }
 }
 
-async function checkMemoryUsage(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: any }> {
+async function checkMemoryUsage(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: Record<string, unknown> }> {
   const startTime = Date.now();
 
   try {

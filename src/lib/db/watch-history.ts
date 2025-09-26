@@ -1,10 +1,10 @@
 import { eq, desc, asc, and, gte, lte, like, sql } from 'drizzle-orm';
-import { db } from './db';
+import { db } from '../db';
 import { watchHistory, movies, users } from '../schema';
 import { WatchHistoryItem, WatchHistoryFilters } from '../../state/types';
 
 export interface CreateWatchHistoryData {
-  userId: number;
+  userId: string;
   movieId: number;
   watchedAt: Date;
   rating?: number;
@@ -18,7 +18,7 @@ export interface UpdateWatchHistoryData {
 }
 
 export interface WatchHistoryQueryOptions {
-  userId?: number;
+  userId?: string;
   movieId?: number;
   limit?: number;
   offset?: number;
@@ -93,7 +93,7 @@ export async function getWatchHistoryById(id: number): Promise<WatchHistoryItem>
 
 // Get user's watch history with optional filtering and pagination
 export async function getUserWatchHistory(
-  userId: number,
+  userId: string,
   options: WatchHistoryQueryOptions = {}
 ): Promise<{ items: WatchHistoryItem[]; total: number }> {
   try {
@@ -105,7 +105,28 @@ export async function getUserWatchHistory(
       sortOrder = 'desc'
     } = options;
 
-    let query = db
+    // Build where condition
+    let whereCondition = eq(watchHistory.userId, userId);
+
+    if (filters.rating) {
+      whereCondition = and(whereCondition, eq(watchHistory.rating, filters.rating))!;
+    }
+
+    if (filters.year) {
+      const startOfYear = new Date(filters.year, 0, 1);
+      const endOfYear = new Date(filters.year, 11, 31, 23, 59, 59);
+      const yearCondition = and(
+        gte(watchHistory.watchedAt, startOfYear),
+        lte(watchHistory.watchedAt, endOfYear)
+      );
+      whereCondition = and(whereCondition, yearCondition)!;
+    }
+
+    // Apply sorting
+    const sortColumn = sortBy === 'title' ? movies.title : watchHistory.watchedAt;
+    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
+
+    const items = await db
       .select({
         id: watchHistory.id,
         userId: watchHistory.userId,
@@ -126,34 +147,10 @@ export async function getUserWatchHistory(
       })
       .from(watchHistory)
       .leftJoin(movies, eq(watchHistory.movieId, movies.id))
-      .where(eq(watchHistory.userId, userId));
-
-    // Apply filters
-    if (filters.rating) {
-      query = query.where(eq(watchHistory.rating, filters.rating));
-    }
-
-    if (filters.year) {
-      const startOfYear = new Date(filters.year, 0, 1);
-      const endOfYear = new Date(filters.year, 11, 31, 23, 59, 59);
-      query = query.where(
-        and(
-          gte(watchHistory.watchedAt, startOfYear),
-          lte(watchHistory.watchedAt, endOfYear)
-        )
-      );
-    }
-
-    // Apply sorting
-    const sortColumn = sortBy === 'title' ? movies.title : watchHistory.watchedAt;
-    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
-
-    query = query.orderBy(sortDirection);
-
-    // Apply pagination
-    query = query.limit(limit).offset(offset);
-
-    const items = await query;
+      .where(whereCondition)
+      .orderBy(sortDirection)
+      .limit(limit)
+      .offset(offset);
 
     // Get total count
     const [{ count }] = await db
@@ -173,7 +170,7 @@ export async function getUserWatchHistory(
 
 // Get watch history for a specific movie
 export async function getWatchHistoryByMovie(
-  userId: number,
+  userId: string,
   movieId: number
 ): Promise<WatchHistoryItem | null> {
   try {
@@ -258,7 +255,7 @@ export async function deleteWatchHistory(id: number): Promise<void> {
 
 // Search watch history by title
 export async function searchWatchHistory(
-  userId: number,
+  userId: string,
   query: string,
   options: Omit<WatchHistoryQueryOptions, 'userId'> = {}
 ): Promise<{ items: WatchHistoryItem[]; total: number }> {
@@ -321,7 +318,7 @@ export async function searchWatchHistory(
 }
 
 // Get watch history statistics
-export async function getWatchHistoryStats(userId: number): Promise<{
+export async function getWatchHistoryStats(userId: string): Promise<{
   totalWatched: number;
   averageRating: number;
   thisYear: number;

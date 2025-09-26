@@ -7,13 +7,13 @@ import { Sidebar } from "@/components/layout/sidebar"
 import { PageContainer, PageSection } from "@/components/layout/page-container"
 import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
-import { Search, Plus, BarChart3, Download, Upload } from "lucide-react"
+import { Search, Plus, Download, Upload } from "lucide-react"
 import { DraggableWatchlistGrid } from "@/components/watchlist/draggable-watchlist-grid"
 import { WatchlistFilters } from "@/components/watchlist/watchlist-filters"
 import { AddToWatchlistDialog } from "@/components/watchlist/add-to-watchlist-dialog"
 import { PrioritySelector } from "@/components/watchlist/priority-selector"
 import { WatchlistItem, WatchlistFilters as WatchlistFiltersType } from "@/state/types"
-import { useWatchlistStore } from "@/state/store"
+import { useAppStore } from "@/state/store"
 import { toast } from "sonner"
 
 export default function WatchlistPage() {
@@ -27,17 +27,14 @@ export default function WatchlistPage() {
   })
 
   const {
-    items,
+    watchlistItems: items,
     isLoading,
-    error,
     totalResults,
     fetchWatchlist,
     addToWatchlist,
     removeFromWatchlist,
     updateWatchlistPriority,
-    searchWatchlist,
-    getWatchlistStats,
-  } = useWatchlistStore()
+  } = useAppStore()
 
   // Fetch watchlist on component mount
   useEffect(() => {
@@ -61,7 +58,7 @@ export default function WatchlistPage() {
     try {
       await addToWatchlist(data)
       toast.success("Movie added to watchlist!")
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add movie to watchlist")
     }
   }
@@ -71,17 +68,17 @@ export default function WatchlistPage() {
     try {
       await removeFromWatchlist(id)
       toast.success("Movie removed from watchlist")
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove movie from watchlist")
     }
   }
 
   // Handle mark as watched
-  const handleMarkAsWatched = async (id: number) => {
+  const handleMarkAsWatched = async (_id: number) => {
     try {
       // TODO: Implement mark as watched functionality
       toast.success("Movie marked as watched!")
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to mark movie as watched")
     }
   }
@@ -91,7 +88,7 @@ export default function WatchlistPage() {
     try {
       await updateWatchlistPriority(id, priority)
       toast.success("Priority updated!")
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update priority")
     }
   }
@@ -132,10 +129,10 @@ export default function WatchlistPage() {
         const reader = new FileReader()
         reader.onload = (e) => {
           try {
-            const importedItems = JSON.parse(e.target?.result as string)
+            const _importedItems = JSON.parse(e.target?.result as string)
             // TODO: Implement import functionality
             toast.success("Watchlist imported successfully!")
-          } catch (error) {
+          } catch (_error) {
             toast.error("Failed to import watchlist")
           }
         }
@@ -171,27 +168,26 @@ export default function WatchlistPage() {
             <PageHeader
               title="My Watchlist"
               description="Movies you want to watch"
-              children={
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" onClick={handleImportWatchlist}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Import
-                  </Button>
-                  <Button variant="outline" onClick={handleExportWatchlist}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export
-                  </Button>
-                  <Button onClick={handleBrowseMovies}>
-                    <Search className="h-4 w-4 mr-2" />
-                    Browse Movies
-                  </Button>
-                  <Button onClick={() => setIsAddDialogOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Movie
-                  </Button>
-                </div>
-              }
-            />
+            >
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={handleImportWatchlist}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import
+                </Button>
+                <Button variant="outline" onClick={handleExportWatchlist}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+                <Button onClick={handleBrowseMovies}>
+                  <Search className="h-4 w-4 mr-2" />
+                  Browse Movies
+                </Button>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Movie
+                </Button>
+              </div>
+            </PageHeader>
 
             <div className="space-y-6">
               {/* Filters */}
@@ -253,7 +249,7 @@ export default function WatchlistPage() {
           <div className="bg-background p-6 rounded-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Update Priority</h3>
             <p className="text-muted-foreground mb-4">
-              Update priority for "{editingItem.movie.title}"
+              Update priority for &quot;{editingItem.movie.title}&quot;
             </p>
             <PrioritySelector
               priority={editingItem.priority}

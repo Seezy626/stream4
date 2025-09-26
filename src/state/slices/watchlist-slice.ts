@@ -10,7 +10,7 @@ export const watchlistSlice: StateCreator<
   WatchlistSlice
 > = (set, get) => ({
   // Initial watchlist state
-  items: [],
+  watchlistItems: [],
   filters: {},
   isLoading: false,
   error: null,
@@ -21,28 +21,28 @@ export const watchlistSlice: StateCreator<
   // Watchlist actions
   setItems: (items) => {
     set({
-      items,
+      watchlistItems: items,
       error: null,
     });
   },
 
   addItem: (item) => {
-    const currentItems = get().items;
+    const currentItems = get().watchlistItems;
     const newItem: WatchlistItem = {
       ...item,
       id: Date.now(), // Temporary ID for optimistic updates
     };
 
     set({
-      items: [newItem, ...currentItems],
+      watchlistItems: [newItem, ...currentItems],
       error: null,
     });
   },
 
   updateItem: (id, updates) => {
-    const currentItems = get().items;
+    const currentItems = get().watchlistItems;
     set({
-      items: currentItems.map((item) =>
+      watchlistItems: currentItems.map((item) =>
         item.id === id ? { ...item, ...updates } : item
       ),
       error: null,
@@ -50,9 +50,9 @@ export const watchlistSlice: StateCreator<
   },
 
   removeItem: (id) => {
-    const currentItems = get().items;
+    const currentItems = get().watchlistItems;
     set({
-      items: currentItems.filter((item) => item.id !== id),
+      watchlistItems: currentItems.filter((item) => item.id !== id),
       error: null,
     });
   },
@@ -106,7 +106,7 @@ export const watchlistSlice: StateCreator<
       if (page === 1) {
         setItems(data.items);
       } else {
-        const currentItems = get().items;
+        const currentItems = get().watchlistItems;
         setItems([...currentItems, ...data.items]);
       }
 
@@ -286,9 +286,9 @@ export const watchlistSlice: StateCreator<
       }
 
       // Update local state with new order
-      const currentItems = get().items;
+      const currentItems = get().watchlistItems;
       const updatedItems = currentItems.map(item => {
-        const update = results.find((u: any) => u.id === item.id);
+        const update = results.find((u: { id: number }) => u.id === item.id);
         return update || item;
       });
 

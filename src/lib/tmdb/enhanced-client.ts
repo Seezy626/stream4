@@ -16,7 +16,7 @@ class TMDBEnhancedClient extends TMDBClient {
    */
   async getWithCache<T>(
     endpoint: string,
-    params: Record<string, any> = {},
+    params: Record<string, unknown> = {},
     options: {
       cacheOptions?: TMDBCacheOptions;
       useCache?: boolean;
@@ -67,8 +67,8 @@ class TMDBEnhancedClient extends TMDBClient {
    */
   async postWithRetry<T>(
     endpoint: string,
-    params: Record<string, any> = {},
-    body?: any,
+    params: Record<string, unknown> = {},
+    body?: unknown,
     options: {
       validateParams?: boolean;
     } = {}

@@ -171,7 +171,7 @@ export function WatchedFilters({
                   <div className="flex flex-wrap gap-2">
                     {searchQuery && (
                       <Badge variant="secondary" className="gap-1">
-                        Search: "{searchQuery}"
+                        Search: &quot;{searchQuery}&quot;
                         <button
                           onClick={() => onSearchChange('')}
                           className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"

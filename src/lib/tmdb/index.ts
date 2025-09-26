@@ -4,9 +4,11 @@ export * from './enhanced-client';
 export * from './search';
 export * from './movies';
 export * from './tv';
-export * from './utils';
 export * from './cache';
 export * from './errors';
+
+// Import utils for re-export
+import { TMDBUtils } from './utils';
 
 // Export types
 export type {
@@ -95,4 +97,4 @@ export const {
   validateImageConfig,
   getAvailableImageSizes,
   getBestImageSize,
-} = tmdbUtils;
+} = TMDBUtils;

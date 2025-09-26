@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import {
   Form,
   FormControl,
@@ -36,13 +36,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Search, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { WatchHistoryItem } from '@/state/types';
 
 const addToWatchedSchema = z.object({
   movieId: z.number().min(1, 'Please select a movie'),
-  watchedAt: z.date({
-    required_error: 'Please select when you watched this movie',
-  }),
+  watchedAt: z.date(),
   rating: z.number().min(1).max(10).optional(),
   notes: z.string().optional(),
 });
@@ -114,8 +111,8 @@ export function AddToWatchedDialog({
     onClose();
   };
 
-  const watchedAt = form.watch('watchedAt');
-  const rating = form.watch('rating');
+  const _watchedAt = form.watch('watchedAt');
+  const _rating = form.watch('rating');
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -172,9 +169,11 @@ export function AddToWatchedDialog({
                                 >
                                   <div className="flex items-center gap-3">
                                     {movie.poster_path && (
-                                      <img
+                                      <Image
                                         src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
                                         alt={movie.title}
+                                        width={48}
+                                        height={64}
                                         className="w-12 h-16 object-cover rounded"
                                       />
                                     )}
@@ -202,9 +201,11 @@ export function AddToWatchedDialog({
                       {selectedMovie && (
                         <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                           {selectedMovie.poster_path && (
-                            <img
+                            <Image
                               src={`https://image.tmdb.org/t/p/w92${selectedMovie.poster_path}`}
                               alt={selectedMovie.title}
+                              width={48}
+                              height={64}
                               className="w-12 h-16 object-cover rounded"
                             />
                           )}

@@ -1,6 +1,7 @@
 import { tmdbEnhancedClient } from './enhanced-client';
 import { db } from '../db';
 import { movies } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export interface TMDBMovie {
   id: number;
@@ -59,7 +60,7 @@ export async function syncMovieWithTMDB(tmdbId: number): Promise<number> {
         backdropPath: movieDetails.backdrop_path,
         voteAverage: movieDetails.vote_average,
         voteCount: movieDetails.vote_count,
-        genreIds: movieDetails.genres?.map((g: any) => g.id) || [],
+        genreIds: movieDetails.genres?.map((g: { id: number }) => g.id) || [],
         mediaType: 'movie',
       })
       .returning();
@@ -102,7 +103,7 @@ export async function syncTVShowWithTMDB(tmdbId: number): Promise<number> {
         backdropPath: tvDetails.backdrop_path,
         voteAverage: tvDetails.vote_average,
         voteCount: tvDetails.vote_count,
-        genreIds: tvDetails.genres?.map((g: any) => g.id) || [],
+        genreIds: tvDetails.genres?.map((g: { id: number }) => g.id) || [],
         mediaType: 'tv',
       })
       .returning();
@@ -167,7 +168,7 @@ export async function searchAndSyncTMDB(
 
     // Filter out person results and limit results
     const filteredResults = (searchResults.results || [])
-      .filter((result: any) => result.media_type === 'movie' || result.media_type === 'tv')
+      .filter((result: { media_type: string }) => result.media_type === 'movie' || result.media_type === 'tv')
       .slice(0, limit);
 
     return {
@@ -186,7 +187,7 @@ export async function searchAndSyncTMDB(
  */
 export async function getMovieWithSync(tmdbId: number): Promise<{
   localId: number;
-  tmdbData: any;
+  tmdbData: Record<string, unknown>;
 }> {
   try {
     const localId = await syncMovieWithTMDB(tmdbId);
@@ -204,7 +205,7 @@ export async function getMovieWithSync(tmdbId: number): Promise<{
  */
 export async function getTVShowWithSync(tmdbId: number): Promise<{
   localId: number;
-  tmdbData: any;
+  tmdbData: Record<string, unknown>;
 }> {
   try {
     const localId = await syncTVShowWithTMDB(tmdbId);

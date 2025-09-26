@@ -5,7 +5,7 @@ interface PerformanceMetric {
   name: string;
   value: number;
   timestamp: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 interface WebVitalsMetric {
@@ -62,7 +62,7 @@ class PerformanceMonitor {
           const navEntry = entry as PerformanceNavigationTiming;
           this.recordMetric('dom-content-loaded', navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart);
           this.recordMetric('load-complete', navEntry.loadEventEnd - navEntry.loadEventStart);
-          this.recordMetric('total-load-time', navEntry.loadEventEnd - navEntry.navigationStart);
+          this.recordMetric('total-load-time', navEntry.loadEventEnd - navEntry.startTime);
         }
       });
       navigationObserver.observe({ entryTypes: ['navigation'] });
@@ -84,7 +84,7 @@ class PerformanceMonitor {
       this.observers.push(resourceObserver);
 
     } catch (error) {
-      logger.warn('Failed to initialize performance observers', { error: error.message });
+      logger.warn('Failed to initialize performance observers', { error: (error as Error).message });
     }
   }
 
@@ -107,20 +107,21 @@ class PerformanceMonitor {
       observer.observe({ entryTypes: [entryType] });
       this.observers.push(observer);
     } catch (error) {
-      logger.warn(`Failed to track ${name} web vital`, { error: error.message });
+      logger.warn(`Failed to track ${name} web vital`, { error: (error as Error).message });
     }
   }
 
   private getWebVitalValue(entry: PerformanceEntry, name: WebVitalsMetric['name']): number | null {
+    const entryData = entry as unknown as Record<string, unknown>;
     switch (name) {
       case 'FCP':
-        return (entry as any).processingStart || null;
+        return (entryData.processingStart as number) || null;
       case 'LCP':
-        return (entry as any).renderTime || (entry as any).loadEventEnd || null;
+        return (entryData.renderTime as number) || (entryData.loadEventEnd as number) || null;
       case 'CLS':
-        return (entry as any).value || null;
+        return (entryData.value as number) || null;
       case 'FID':
-        return (entry as any).processingStart || null;
+        return (entryData.processingStart as number) || null;
       case 'TTFB':
         return (entry as PerformanceNavigationTiming).responseStart || null;
       default:
@@ -167,7 +168,7 @@ class PerformanceMonitor {
     });
   }
 
-  recordMetric(name: string, value: number, context?: Record<string, any>): void {
+  recordMetric(name: string, value: number, context?: Record<string, unknown>): void {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -225,7 +226,7 @@ class PerformanceMonitor {
   measureExecutionTime<T>(
     name: string,
     fn: () => T,
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ): T {
     const startTime = performance.now();
     const result = fn();
@@ -240,7 +241,7 @@ class PerformanceMonitor {
   async measureAsyncExecutionTime<T>(
     name: string,
     fn: () => Promise<T>,
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ): Promise<T> {
     const startTime = performance.now();
     const result = await fn();
@@ -281,7 +282,7 @@ class PerformanceMonitor {
         webVitals[name] = {
           name: name as WebVitalsMetric['name'],
           value: metric.value,
-          rating: metric.context?.rating || 'good',
+          rating: (metric.context?.rating as WebVitalsMetric['rating']) || 'good',
         };
       } else if (metric.name === 'page-load-time') {
         loadTimes.push(metric.value);

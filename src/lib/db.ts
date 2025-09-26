@@ -21,7 +21,7 @@ export const getDb = () => db;
 // Test database connection
 export const testConnection = async () => {
   try {
-    await db.execute(sql`SELECT 1`);
+    await sql`SELECT 1`;
     console.log('✅ Database connection successful');
     return true;
   } catch (error) {

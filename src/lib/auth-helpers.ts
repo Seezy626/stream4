@@ -5,6 +5,7 @@ import { db } from './db';
 import { users } from './schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 
 export async function getSession() {
   return await getServerSession(authOptions);
@@ -27,6 +28,7 @@ export async function createUser(email: string, password: string, name?: string)
   const hashedPassword = await bcrypt.hash(password, 12);
 
   const user = await db.insert(users).values({
+    id: randomUUID(),
     email,
     password: hashedPassword,
     name,
@@ -35,7 +37,7 @@ export async function createUser(email: string, password: string, name?: string)
   return user[0];
 }
 
-export async function updateUserPassword(userId: number, newPassword: string) {
+export async function updateUserPassword(userId: string, newPassword: string) {
   const hashedPassword = await bcrypt.hash(newPassword, 12);
 
   await db
@@ -54,7 +56,7 @@ export async function getUserByEmail(email: string) {
   return user[0];
 }
 
-export async function updateUserProfile(userId: number, updates: {
+export async function updateUserProfile(userId: string, updates: {
   name?: string;
   image?: string;
 }) {
@@ -67,7 +69,7 @@ export async function updateUserProfile(userId: number, updates: {
     .where(eq(users.id, userId));
 }
 
-export async function verifyUserPassword(userId: number, password: string): Promise<boolean> {
+export async function verifyUserPassword(userId: string, password: string): Promise<boolean> {
   const user = await db
     .select()
     .from(users)

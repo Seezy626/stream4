@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitionProvider } from "@/components/view-transition";
 import { Toaster } from "@/components/ui/sonner";
 import ErrorBoundary from "@/components/error-boundary";
+import { SessionProvider } from "@/components/auth/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,21 +32,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-          storageKey="movie-tracker-theme"
-          themes={['light', 'dark', 'system']}
-        >
-          <ErrorBoundary>
-            <ViewTransitionProvider>
-              {children}
-            </ViewTransitionProvider>
-          </ErrorBoundary>
-          <Toaster />
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange={false}
+            storageKey="movie-tracker-theme"
+            themes={['light', 'dark', 'system']}
+          >
+            <ErrorBoundary>
+              <ViewTransitionProvider>
+                {children}
+              </ViewTransitionProvider>
+            </ErrorBoundary>
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

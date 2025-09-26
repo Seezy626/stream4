@@ -17,7 +17,7 @@ interface CacheEntry<T> {
 
 // In-memory cache for frequently accessed data
 class MemoryCache {
-  private cache = new Map<string, CacheEntry<any>>();
+  private cache = new Map<string, CacheEntry<unknown>>();
   private maxSize = 100 * 1024 * 1024; // 100MB default
   private currentSize = 0;
 
@@ -61,7 +61,7 @@ class MemoryCache {
       return null;
     }
 
-    return entry.data;
+    return entry.data as T;
   }
 
   delete(key: string): void {
@@ -132,7 +132,7 @@ class HTTPResponseCache {
       if (request.method === 'GET' && response.status === 200) {
         await cache.put(request, responseToCache);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn('Failed to cache HTTP response:', error);
     }
   }
@@ -163,7 +163,7 @@ class HTTPResponseCache {
       }
 
       return cachedResponse;
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn('Failed to get cached HTTP response:', error);
       return null;
     }
@@ -179,7 +179,7 @@ class HTTPResponseCache {
       await cache.keys().then(keys => {
         keys.forEach(key => cache.delete(key));
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn('Failed to clear HTTP cache:', error);
     }
   }

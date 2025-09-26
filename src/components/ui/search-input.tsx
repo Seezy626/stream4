@@ -7,10 +7,12 @@ import { Search, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface SearchInputProps {
-  onSearch: (query: string) => void
+  onSearch?: (query: string) => void
   placeholder?: string
   className?: string
   isLoading?: boolean
+  value?: string
+  onChange?: (value: string) => void
 }
 
 export function SearchInput({
@@ -18,12 +20,16 @@ export function SearchInput({
   placeholder = "Search for movies...",
   className,
   isLoading = false,
+  value,
+  onChange,
 }: SearchInputProps) {
-  const [query, setQuery] = useState("")
+  const [internalQuery, setInternalQuery] = useState("")
+  const query = value !== undefined ? value : internalQuery
+  const setQuery = onChange || setInternalQuery
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (query.trim()) {
+    if (query.trim() && onSearch) {
       onSearch(query.trim())
     }
   }
@@ -65,13 +71,15 @@ export function SearchInput({
           </Button>
         )}
       </div>
-      <Button
-        type="submit"
-        className="w-full mt-2"
-        disabled={isLoading || !query.trim()}
-      >
-        {isLoading ? "Searching..." : "Search"}
-      </Button>
+      {onSearch && (
+        <Button
+          type="submit"
+          className="w-full mt-2"
+          disabled={isLoading || !query.trim()}
+        >
+          {isLoading ? "Searching..." : "Search"}
+        </Button>
+      )}
     </form>
   )
 }

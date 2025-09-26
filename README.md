@@ -39,7 +39,7 @@ A modern movie tracking application built with Next.js 15, TypeScript, and Tailw
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/lassestilvang/stream4.git
    ```
 
 2. **Install dependencies**

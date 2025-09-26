@@ -1,4 +1,6 @@
-import { TMDBApiError, TMDBRateLimitError } from './client';
+
+
+import { TMDBApiError, TMDBRateLimitError } from '@/types/tmdb';
 
 /**
  * Custom error classes for TMDB API operations
@@ -52,7 +54,7 @@ export class TMDBErrorHandler {
   /**
    * Parse and handle TMDB API errors
    */
-  static handleAPIError(error: any): never {
+  static handleAPIError(error: unknown): never {
     // Handle rate limiting
     if (error instanceof TMDBRateLimitError) {
       throw new TMDBRateLimitError(error.message);
@@ -77,13 +79,14 @@ export class TMDBErrorHandler {
     }
 
     // Handle network errors
-    if (error.name === 'AbortError' || error.message?.includes('timeout')) {
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError' ||
+        (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string' && error.message.includes('timeout'))) {
       throw new TMDBTimeoutError();
     }
 
     // Handle network connectivity issues
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      throw new TMDBNetworkError('Network connection failed', error);
+    if (error && typeof error === 'object' && 'code' in error && (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND')) {
+      throw new TMDBNetworkError('Network connection failed', error instanceof Error ? error : undefined);
     }
 
     // Handle generic errors
@@ -98,7 +101,7 @@ export class TMDBErrorHandler {
   /**
    * Get user-friendly error message
    */
-  static getUserFriendlyMessage(error: any): string {
+  static getUserFriendlyMessage(error: unknown): string {
     if (error instanceof TMDBAuthenticationError) {
       return 'Authentication failed. Please check your API configuration.';
     }
@@ -137,7 +140,7 @@ export class TMDBErrorHandler {
   /**
    * Check if error is retryable
    */
-  static isRetryableError(error: any): boolean {
+  static isRetryableError(error: unknown): boolean {
     if (error instanceof TMDBRateLimitError) {
       return true;
     }
@@ -171,18 +174,24 @@ export class TMDBErrorHandler {
   /**
    * Log error with context
    */
-  static logError(error: any, context: {
+  static logError(error: unknown, context: {
     endpoint?: string;
-    params?: Record<string, any>;
+    params?: Record<string, unknown>;
     attempt?: number;
     userId?: string;
   } = {}): void {
+    const errorInfo = error instanceof Error ? {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    } : {
+      name: 'Unknown',
+      message: String(error),
+      stack: undefined,
+    };
+
     const logData = {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      },
+      error: errorInfo,
       context,
       timestamp: new Date().toISOString(),
     };
@@ -203,8 +212,8 @@ export class TMDBRetry {
     options: {
       maxAttempts?: number;
       baseDelay?: number;
-      onRetry?: (error: any, attempt: number) => void;
-      shouldRetry?: (error: any) => boolean;
+      onRetry?: (error: unknown, attempt: number) => void;
+      shouldRetry?: (error: unknown) => boolean;
     } = {}
   ): Promise<T> {
     const {
@@ -214,7 +223,7 @@ export class TMDBRetry {
       shouldRetry = TMDBErrorHandler.isRetryableError,
     } = options;
 
-    let lastError: any;
+    let lastError: unknown;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
@@ -282,7 +291,7 @@ export class TMDBValidator {
   /**
    * Validate movie/TV show ID
    */
-  static validateMediaId(id: any): id is number {
+  static validateMediaId(id: unknown): id is number {
     return typeof id === 'number' && id > 0 && Number.isInteger(id);
   }
 
@@ -296,14 +305,14 @@ export class TMDBValidator {
   /**
    * Validate page number
    */
-  static validatePage(page: any): boolean {
+  static validatePage(page: unknown): boolean {
     return typeof page === 'number' && page > 0 && page <= 1000 && Number.isInteger(page);
   }
 
   /**
    * Validate year
    */
-  static validateYear(year: any): boolean {
+  static validateYear(year: unknown): boolean {
     return typeof year === 'number' && year >= 1900 && year <= new Date().getFullYear() + 5 && Number.isInteger(year);
   }
 
@@ -317,7 +326,7 @@ export class TMDBValidator {
   /**
    * Validate genre IDs
    */
-  static validateGenreIds(genres: any[]): genres is number[] {
+  static validateGenreIds(genres: unknown[]): genres is number[] {
     return Array.isArray(genres) &&
            genres.every(id => typeof id === 'number' && id > 0 && Number.isInteger(id));
   }
@@ -325,10 +334,10 @@ export class TMDBValidator {
   /**
    * Sanitize search parameters
    */
-  static sanitizeSearchParams(params: Record<string, any>): Record<string, any> {
-    const sanitized: Record<string, any> = {};
+  static sanitizeSearchParams(params: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
 
-    if (params.query && this.validateSearchQuery(params.query)) {
+    if (typeof params.query === 'string' && this.validateSearchQuery(params.query)) {
       sanitized.query = params.query.trim();
     }
 
@@ -336,7 +345,7 @@ export class TMDBValidator {
       sanitized.page = params.page;
     }
 
-    if (params.language && this.validateLanguageCode(params.language)) {
+    if (typeof params.language === 'string' && this.validateLanguageCode(params.language)) {
       sanitized.language = params.language;
     }
 
@@ -344,7 +353,7 @@ export class TMDBValidator {
       sanitized.year = params.year;
     }
 
-    if (params.region && this.validateLanguageCode(params.region)) {
+    if (typeof params.region === 'string' && this.validateLanguageCode(params.region)) {
       sanitized.region = params.region;
     }
 

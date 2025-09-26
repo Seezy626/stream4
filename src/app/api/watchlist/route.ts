@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const sortBy = (searchParams.get('sortBy') as 'added_at' | 'priority' | 'title') || 'added_at';
     const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     let result;
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     const watchlistData: CreateWatchlistData = {
       userId,
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get watchlist statistics
-export async function PATCH(request: NextRequest) {
+export async function PATCH(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
     const stats = await getWatchlistStats(userId);
 
     return NextResponse.json(stats);

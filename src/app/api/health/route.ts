@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
     return response;
 
   } catch (error) {
-    logger.error('Health check endpoint error', error, {
+    logger.error('Health check endpoint error', error as Error, {
       url: request.url,
       method: request.method,
     });
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Handle HEAD requests for simple health checks
-export async function HEAD(request: NextRequest) {
+export async function HEAD(_request: NextRequest) {
   try {
     const healthResult = await healthCheckService.performHealthCheck();
     const statusCode = healthResult.status === 'healthy' ? 200 :
@@ -110,7 +110,7 @@ export async function HEAD(request: NextRequest) {
       },
     });
   } catch (error) {
-    logger.error('Health check HEAD error', error);
+    logger.error('Health check HEAD error', error as Error);
     return new NextResponse(null, { status: 503 });
   }
 }

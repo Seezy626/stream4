@@ -3,11 +3,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { bulkUpdatePriorities } from '@/lib/db/watchlist';
 
-interface BulkPriorityUpdate {
-  id: number;
-  priority: 'low' | 'medium' | 'high';
-}
-
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -47,7 +42,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // TODO: Add user authorization check for each item
     // For now, we'll assume all items belong to the authenticated user

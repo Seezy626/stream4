@@ -72,7 +72,7 @@ class ConfigurationService {
   private loadConfiguration(): EnvironmentConfig {
     const isProduction = process.env.NODE_ENV === 'production';
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const isStaging = process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV === 'staging';
+    const isStaging = process.env.VERCEL_ENV === 'preview';
 
     // Base configuration
     const baseConfig: EnvironmentConfig = {
@@ -303,7 +303,7 @@ class ConfigurationService {
   /**
    * Get configuration summary for debugging
    */
-  getConfigSummary(): Record<string, any> {
+  getConfigSummary(): Record<string, unknown> {
     const validation = this.validateConfig();
 
     return {

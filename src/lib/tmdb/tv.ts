@@ -20,7 +20,7 @@ export class TMDBTVShows {
       append_to_response?: string[];
     } = {}
   ): Promise<TMDBTVShowDetails> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       append_to_response: options.append_to_response?.join(','),
     };
@@ -45,7 +45,7 @@ export class TMDBTVShows {
       include_image_language?: string[];
     } = {}
   ): Promise<TMDBTVShowImages> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       include_image_language: options.include_image_language?.join(','),
     };
@@ -62,7 +62,7 @@ export class TMDBTVShows {
       language?: string;
     } = {}
   ): Promise<TMDBTVShowVideos> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 
@@ -79,7 +79,7 @@ export class TMDBTVShows {
       language?: string;
     } = {}
   ): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -103,7 +103,7 @@ export class TMDBTVShows {
       language?: string;
     } = {}
   ): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -128,7 +128,7 @@ export class TMDBTVShows {
       append_to_response?: string[];
     } = {}
   ): Promise<TMDBSeason & { episodes: TMDBEpisode[] }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       append_to_response: options.append_to_response?.join(','),
     };
@@ -151,7 +151,7 @@ export class TMDBTVShows {
       append_to_response?: string[];
     } = {}
   ): Promise<TMDBEpisode> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       append_to_response: options.append_to_response?.join(','),
     };
@@ -262,7 +262,7 @@ export class TMDBTVShows {
       id: string;
     }>;
   }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 
@@ -276,7 +276,7 @@ export class TMDBTVShows {
     page?: number;
     language?: string;
   } = {}): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -297,7 +297,7 @@ export class TMDBTVShows {
     page?: number;
     language?: string;
   } = {}): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -318,7 +318,7 @@ export class TMDBTVShows {
     page?: number;
     language?: string;
   } = {}): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -339,7 +339,7 @@ export class TMDBTVShows {
     page?: number;
     language?: string;
   } = {}): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -359,7 +359,7 @@ export class TMDBTVShows {
   async getLatestTVShow(options: {
     language?: string;
   } = {}): Promise<TMDBTVShowDetails> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 

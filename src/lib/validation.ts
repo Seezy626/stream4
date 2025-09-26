@@ -1,4 +1,3 @@
-import DOMPurify from 'isomorphic-dompurify';
 import logger from './logger';
 
 interface ValidationRule {
@@ -6,7 +5,7 @@ interface ValidationRule {
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (value: any) => boolean | string;
+  custom?: (value: unknown) => boolean | string;
   sanitize?: boolean;
 }
 
@@ -17,15 +16,14 @@ interface ValidationSchema {
 interface ValidationResult {
   isValid: boolean;
   errors: Record<string, string>;
-  sanitizedData: Record<string, any>;
+  sanitizedData: Record<string, unknown>;
 }
 
 class ValidationService {
   private sanitizeHtml(input: string): string {
-    return DOMPurify.sanitize(input, {
-      ALLOWED_TAGS: [], // No HTML tags allowed by default
-      ALLOWED_ATTR: [],
-    });
+    return input
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/[<>\"'&]/g, ''); // Remove potentially dangerous characters
   }
 
   private sanitizeText(input: string): string {
@@ -52,7 +50,7 @@ class ValidationService {
     }
   }
 
-  private validateRequired(value: any, fieldName: string): string | null {
+  private validateRequired(value: unknown, fieldName: string): string | null {
     if (value === undefined || value === null || value === '') {
       return `${fieldName} is required`;
     }
@@ -80,7 +78,7 @@ class ValidationService {
     return null;
   }
 
-  private validateCustom(value: any, customValidator: (value: any) => boolean | string, fieldName: string): string | null {
+  private validateCustom(value: unknown, customValidator: (value: unknown) => boolean | string, fieldName: string): string | null {
     const result = customValidator(value);
     if (result === false) {
       return `${fieldName} is invalid`;
@@ -91,9 +89,9 @@ class ValidationService {
     return null;
   }
 
-  validate(data: Record<string, any>, schema: ValidationSchema): ValidationResult {
+  validate(data: Record<string, unknown>, schema: ValidationSchema): ValidationResult {
     const errors: Record<string, string> = {};
-    const sanitizedData: Record<string, any> = {};
+    const sanitizedData: Record<string, unknown> = {};
 
     for (const [fieldName, rules] of Object.entries(schema)) {
       const value = data[fieldName];

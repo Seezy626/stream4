@@ -4,8 +4,6 @@ import { MovieFilters } from '../../types';
 import { createMockMovie } from '../../../__tests__/utils/test-factories';
 
 // Mock the StateCreator type
-type MockSetState = jest.MockedFunction<(partial: any) => void>;
-type MockGetState = jest.MockedFunction<() => any>;
 
 const mockSet = jest.fn();
 const mockGet = jest.fn();
@@ -26,7 +24,7 @@ const createMockStore = (initialState = {}) => {
   mockGet.mockReturnValue(defaultState);
   mockSet.mockClear();
 
-  return movieSlice(mockSet as any, mockGet as any);
+  return movieSlice(mockSet as jest.MockedFunction<jest.Mock>, mockGet as jest.MockedFunction<jest.Mock>);
 };
 
 describe('movieSlice', () => {

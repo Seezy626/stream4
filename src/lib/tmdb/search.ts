@@ -13,7 +13,7 @@ export class TMDBSearch {
    * Perform a multi-search across movies, TV shows, and people
    */
   async multiSearch(filters: TMDBSearchFilters): Promise<TMDBSearchResults> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       query: filters.query,
       page: filters.page || 1,
       language: filters.language || 'en-US',
@@ -32,7 +32,7 @@ export class TMDBSearch {
     primary_release_year?: number;
     sort_by?: 'popularity.desc' | 'popularity.asc' | 'release_date.desc' | 'release_date.asc' | 'vote_average.desc' | 'vote_average.asc';
   }): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       query: filters.query,
       page: filters.page || 1,
       language: filters.language || 'en-US',
@@ -59,7 +59,7 @@ export class TMDBSearch {
     first_air_date_year?: number;
     sort_by?: 'popularity.desc' | 'popularity.asc' | 'first_air_date.desc' | 'first_air_date.asc' | 'vote_average.desc' | 'vote_average.asc';
   }): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       query: filters.query,
       page: filters.page || 1,
       language: filters.language || 'en-US',
@@ -81,7 +81,7 @@ export class TMDBSearch {
    * Search for people (actors, directors, etc.)
    */
   async searchPeople(filters: TMDBSearchFilters): Promise<{ results: TMDBPerson[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       query: filters.query,
       page: filters.page || 1,
       language: filters.language || 'en-US',
@@ -117,7 +117,7 @@ export class TMDBSearch {
     with_runtime_lte?: number;
     include_adult?: boolean;
   }): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: filters.page || 1,
       language: filters.language || 'en-US',
       sort_by: filters.sort_by || 'popularity.desc',
@@ -160,7 +160,7 @@ export class TMDBSearch {
     vote_count_gte?: number;
     include_adult?: boolean;
   }): Promise<{ results: TMDBTVShow[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: filters.page || 1,
       language: filters.language || 'en-US',
       sort_by: filters.sort_by || 'popularity.desc',

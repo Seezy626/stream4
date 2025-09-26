@@ -51,7 +51,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    logger.error('Cache health check endpoint error', error);
+    logger.error('Cache health check endpoint error', error as Error);
 
     return NextResponse.json(
       {
@@ -65,13 +65,11 @@ export async function GET() {
   }
 }
 
-async function checkMemoryCache(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: any }> {
+async function checkMemoryCache(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: Record<string, unknown> }> {
   const startTime = Date.now();
 
   try {
     // Test memory cache operations
-    const testKey = `health_check_${Date.now()}`;
-    const testValue = { test: true, timestamp: new Date().toISOString() };
 
     // Set value
     const setStart = Date.now();
@@ -111,7 +109,7 @@ async function checkMemoryCache(): Promise<{ status: 'up' | 'down' | 'degraded';
   }
 }
 
-async function checkRedisCache(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: any }> {
+async function checkRedisCache(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: Record<string, unknown> }> {
   const startTime = Date.now();
 
   try {

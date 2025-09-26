@@ -62,7 +62,7 @@ class RateLimiter {
       }
 
       // Get current request count
-      const requests = await this.redis.zcount(requestKey, windowStart, now);
+      const requests = await this.redis.zcount(requestKey, windowStart.toString(), now.toString());
 
       if (requests >= this.config.maxRequests) {
         // Rate limit exceeded - block the user
@@ -79,13 +79,13 @@ class RateLimiter {
       }
 
       // Add current request to the sorted set
-      await this.redis.zadd(requestKey, { score: now, value: now.toString() });
+      await this.redis.zadd(requestKey, { score: now, member: now.toString() });
 
       // Set expiry for the request key
       await this.redis.expire(requestKey, Math.ceil(this.config.windowMs / 1000));
 
       // Clean up old requests (outside the window)
-      await this.redis.zremrangebyscore(requestKey, '-inf', windowStart);
+      await this.redis.zremrangebyscore(requestKey, Number.NEGATIVE_INFINITY, windowStart);
 
       // Calculate remaining requests and reset time
       const remainingRequests = Math.max(0, this.config.maxRequests - requests - 1);
@@ -128,7 +128,7 @@ class RateLimiter {
       const blockExpiry = await this.redis.get<number>(blockKey);
       const isBlocked = blockExpiry ? now < blockExpiry : false;
 
-      const requestsInWindow = await this.redis.zcount(requestKey, windowStart, now);
+      const requestsInWindow = await this.redis.zcount(requestKey, windowStart.toString(), now.toString());
 
       return {
         requestsInWindow,

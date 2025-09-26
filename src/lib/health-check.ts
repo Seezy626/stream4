@@ -21,7 +21,7 @@ interface HealthCheck {
   status: 'up' | 'down' | 'degraded';
   responseTime: number;
   message?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 class HealthCheckService {
@@ -79,8 +79,8 @@ class HealthCheckService {
       });
 
       return result;
-    } catch (error) {
-      logger.error('Health check failed', error);
+    } catch (error: unknown) {
+      logger.error('Health check failed', error as Error);
 
       return {
         status: 'unhealthy',
@@ -166,7 +166,7 @@ class HealthCheckService {
         message: data.message || (response.ok ? 'Cache is healthy' : 'Cache is degraded'),
         details: data,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       return {
         status: 'degraded',
         responseTime: Date.now() - startTime,
@@ -197,7 +197,7 @@ class HealthCheckService {
         message: data.message || (response.ok ? 'External APIs are healthy' : 'External APIs are degraded'),
         details: data,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       return {
         status: 'degraded',
         responseTime: Date.now() - startTime,
@@ -292,7 +292,7 @@ class HealthCheckService {
   /**
    * Get health check configuration
    */
-  getHealthCheckConfig(): Record<string, any> {
+  getHealthCheckConfig(): Record<string, unknown> {
     return {
       environment: this.config.app.environment,
       isProduction: this.config.app.isProduction,
@@ -325,7 +325,7 @@ class HealthCheckService {
   /**
    * Get detailed health status for monitoring
    */
-  async getDetailedStatus(): Promise<Record<string, any>> {
+  async getDetailedStatus(): Promise<Record<string, unknown>> {
     const health = await this.performHealthCheck();
 
     return {

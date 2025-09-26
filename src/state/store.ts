@@ -80,7 +80,7 @@ export const useAppStore = create<AppStore>()(
         // Don't persist loading states, errors, or temporary data
       }),
       // Custom merge function for hydration
-      merge: (persistedState: any, currentState: AppState) => {
+      merge: (persistedState: Partial<AppState>, currentState: AppState) => {
         return {
           ...currentState,
           ...persistedState,

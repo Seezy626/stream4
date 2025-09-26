@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
     const watchlistItem = await getWatchlistById(watchlistId);
 
     // Check if the watchlist item belongs to the authenticated user
@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // First check if the watchlist item belongs to the authenticated user
     const existingItem = await getWatchlistById(watchlistId);
@@ -159,7 +159,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // First check if the watchlist item belongs to the authenticated user
     const existingItem = await getWatchlistById(watchlistId);

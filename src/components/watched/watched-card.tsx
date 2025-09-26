@@ -22,7 +22,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/alert-dialog';
 import {
   Edit,
   Trash2,
@@ -185,7 +185,7 @@ export function WatchedCard({ item, onEdit, onDelete }: WatchedCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete from Watched</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "{item.movie.title}" from your watched list?
+              Are you sure you want to remove &quot;{item.movie.title}&quot; from your watched list?
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

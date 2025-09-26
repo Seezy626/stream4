@@ -66,7 +66,7 @@ export function WatchedList({
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: string | number, bValue: string | number;
 
       switch (sortBy) {
         case 'title':
@@ -172,7 +172,7 @@ export function WatchedList({
       {!isLoading && filteredItems.length === 0 && items.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground mb-4">
-            You haven't watched any movies yet.
+            You haven&apos;t watched any movies yet.
           </p>
           <Button onClick={onAddNew}>
             <Plus className="h-4 w-4 mr-2" />

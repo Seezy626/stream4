@@ -40,7 +40,9 @@ class CorsHandler {
 
     // Add production origin if available
     if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_APP_URL) {
-      this.options.origin.push(process.env.NEXT_PUBLIC_APP_URL);
+      if (Array.isArray(this.options.origin)) {
+        this.options.origin.push(process.env.NEXT_PUBLIC_APP_URL);
+      }
     }
   }
 
@@ -61,7 +63,7 @@ class CorsHandler {
   handlePreflight(request: NextRequest): NextResponse {
     const origin = request.headers.get('origin') || '';
     const requestMethod = request.headers.get('access-control-request-method') || '';
-    const requestHeaders = request.headers.get('access-control-request-headers') || '';
+    const _requestHeaders = request.headers.get('access-control-request-headers') || '';
 
     // Check if origin is allowed
     if (!this.isOriginAllowed(origin)) {
@@ -118,7 +120,7 @@ class CorsHandler {
    */
   createCorsResponse(
     request: NextRequest,
-    data: any,
+    data: unknown,
     status: number = 200,
     headers: Record<string, string> = {}
   ): NextResponse {
@@ -231,7 +233,7 @@ class CorsService {
    */
   createGeneralApiResponse(
     request: NextRequest,
-    data: any,
+    data: unknown,
     status: number = 200,
     headers: Record<string, string> = {}
   ): NextResponse {
@@ -243,7 +245,7 @@ class CorsService {
    */
   createPublicApiResponse(
     request: NextRequest,
-    data: any,
+    data: unknown,
     status: number = 200,
     headers: Record<string, string> = {}
   ): NextResponse {
@@ -255,7 +257,7 @@ class CorsService {
    */
   createAuthApiResponse(
     request: NextRequest,
-    data: any,
+    data: unknown,
     status: number = 200,
     headers: Record<string, string> = {}
   ): NextResponse {

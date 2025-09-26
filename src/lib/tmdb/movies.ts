@@ -19,7 +19,7 @@ export class TMDBMovies {
       append_to_response?: string[];
     } = {}
   ): Promise<TMDBMovieDetails> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       append_to_response: options.append_to_response?.join(','),
     };
@@ -44,7 +44,7 @@ export class TMDBMovies {
       include_image_language?: string[];
     } = {}
   ): Promise<TMDBMovieImages> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
       include_image_language: options.include_image_language?.join(','),
     };
@@ -61,7 +61,7 @@ export class TMDBMovies {
       language?: string;
     } = {}
   ): Promise<TMDBMovieVideos> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 
@@ -78,7 +78,7 @@ export class TMDBMovies {
       language?: string;
     } = {}
   ): Promise<TMDBMovieReviews> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -96,7 +96,7 @@ export class TMDBMovies {
       language?: string;
     } = {}
   ): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -120,7 +120,7 @@ export class TMDBMovies {
       language?: string;
     } = {}
   ): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
     };
@@ -150,7 +150,7 @@ export class TMDBMovies {
     backdrop_path: string | null;
     parts: TMDBMovie[];
   }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 
@@ -170,7 +170,7 @@ export class TMDBMovies {
   async getLatestMovie(options: {
     language?: string;
   } = {}): Promise<TMDBMovieDetails> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       language: options.language || 'en-US',
     };
 
@@ -185,7 +185,7 @@ export class TMDBMovies {
     language?: string;
     region?: string;
   } = {}): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
       region: options.region,
@@ -208,7 +208,7 @@ export class TMDBMovies {
     language?: string;
     region?: string;
   } = {}): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
       region: options.region,
@@ -231,7 +231,7 @@ export class TMDBMovies {
     language?: string;
     region?: string;
   } = {}): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
       region: options.region,
@@ -254,7 +254,7 @@ export class TMDBMovies {
     language?: string;
     region?: string;
   } = {}): Promise<{ results: TMDBMovie[]; total_pages: number; total_results: number }> {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: options.page || 1,
       language: options.language || 'en-US',
       region: options.region,

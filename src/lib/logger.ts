@@ -6,7 +6,7 @@ interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   error?: Error;
   userId?: string;
   sessionId?: string;
@@ -62,7 +62,7 @@ class Logger {
   private createLogEntry(
     level: LogLevel,
     message: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
     error?: Error
   ): LogEntry {
     return {
@@ -101,7 +101,7 @@ class Logger {
     }
 
     // In production, send to monitoring service
-    if (!this.isDevelopment && entry.level !== 'debug') {
+    if (!this.config.app.isDevelopment && entry.level !== 'debug') {
       this.sendToMonitoring(entry);
     }
   }
@@ -142,38 +142,38 @@ class Logger {
     }
   }
 
-  debug(message: string, context?: Record<string, any>): void {
+  debug(message: string, context?: Record<string, unknown>): void {
     this.log(this.createLogEntry('debug', message, context));
   }
 
-  info(message: string, context?: Record<string, any>): void {
+  info(message: string, context?: Record<string, unknown>): void {
     this.log(this.createLogEntry('info', message, context));
   }
 
-  warn(message: string, context?: Record<string, any>): void {
+  warn(message: string, context?: Record<string, unknown>): void {
     this.log(this.createLogEntry('warn', message, context));
   }
 
-  error(message: string, error?: Error, context?: Record<string, any>): void {
+  error(message: string, error?: Error, context?: Record<string, unknown>): void {
     this.log(this.createLogEntry('error', message, context, error));
   }
 
   // Specialized logging methods
-  logApiError(endpoint: string, error: Error, context?: Record<string, any>): void {
+  logApiError(endpoint: string, error: Error, context?: Record<string, unknown>): void {
     this.error(`API Error: ${endpoint}`, error, {
       endpoint,
       ...context,
     });
   }
 
-  logUserAction(action: string, context?: Record<string, any>): void {
+  logUserAction(action: string, context?: Record<string, unknown>): void {
     this.info(`User Action: ${action}`, {
       action,
       ...context,
     });
   }
 
-  logPerformance(operation: string, duration: number, context?: Record<string, any>): void {
+  logPerformance(operation: string, duration: number, context?: Record<string, unknown>): void {
     this.info(`Performance: ${operation}`, {
       operation,
       duration,
@@ -181,7 +181,7 @@ class Logger {
     });
   }
 
-  logSecurity(event: string, context?: Record<string, any>): void {
+  logSecurity(event: string, context?: Record<string, unknown>): void {
     this.warn(`Security Event: ${event}`, {
       event,
       ...context,
@@ -219,7 +219,7 @@ class Logger {
   }
 
   // Get current configuration summary
-  getConfigSummary(): Record<string, any> {
+  getConfigSummary(): Record<string, unknown> {
     return {
       environment: this.config.app.environment,
       logLevel: this.logLevel,

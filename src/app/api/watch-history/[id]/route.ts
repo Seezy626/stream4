@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
     const watchHistoryItem = await getWatchHistoryById(watchHistoryId);
 
     // Check if the watch history belongs to the authenticated user
@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // First check if the watch history belongs to the authenticated user
     const existingItem = await getWatchHistoryById(watchHistoryId);
@@ -152,7 +152,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // First check if the watch history belongs to the authenticated user
     const existingItem = await getWatchHistoryById(watchHistoryId);

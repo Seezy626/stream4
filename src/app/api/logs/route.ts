@@ -5,7 +5,7 @@ interface LogEntry {
   level: 'debug' | 'info' | 'warn' | 'error';
   message: string;
   timestamp: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   error?: Error;
   userId?: string;
   sessionId?: string;
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
     const enrichedLogEntry = {
       ...logEntry,
       serverTimestamp: new Date().toISOString(),
-      ip: request.ip || request.headers.get('x-forwarded-for') || 'unknown',
-      userAgent: logEntry.userAgent || request.headers.get('user-agent'),
+      ip: (request as unknown as { ip?: string }).ip || request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown',
+      userAgent: logEntry.userAgent || request.headers.get('user-agent') || undefined,
     };
 
     // Log to our logger (which will handle console output and external monitoring)
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error processing log entry:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -115,7 +115,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       service: 'logging-service',
     });
-  } catch (error) {
+  } catch (_error: unknown) {
     return NextResponse.json(
       { error: 'Logging service unavailable' },
       { status: 503 }

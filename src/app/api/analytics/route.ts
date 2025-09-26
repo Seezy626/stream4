@@ -6,7 +6,7 @@ import configService from '@/lib/config';
 // Analytics event schema
 const analyticsEventSchema = z.object({
   name: z.string(),
-  properties: z.record(z.any()).optional(),
+  properties: z.record(z.string(), z.unknown()).optional(),
   timestamp: z.string(),
   sessionId: z.string().optional(),
   userId: z.string().optional(),
@@ -86,11 +86,11 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       logger.warn('Invalid analytics payload', {
-        errors: validationResult.error.errors,
+        errors: validationResult.error.issues,
         clientId,
       });
       return NextResponse.json(
-        { error: 'Invalid payload', details: validationResult.error.errors },
+        { error: 'Invalid payload', details: validationResult.error.issues },
         { status: 400 }
       );
     }
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    logger.error('Analytics endpoint error', error, {
+    logger.error('Analytics endpoint error', error as Error, {
       url: request.url,
       method: request.method,
     });
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function processAnalyticsEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
-  const { name, properties, timestamp } = event;
+  const { name } = event;
 
   // Add environment and app version if not present
   const enrichedEvent = {
@@ -167,7 +167,7 @@ async function processAnalyticsEvent(event: z.infer<typeof analyticsEventSchema>
   }
 }
 
-async function processPageViewEvent(event: any): Promise<void> {
+async function processPageViewEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
   logger.debug('Processing page view event', {
     page: event.properties?.page,
     title: event.properties?.title,
@@ -178,7 +178,7 @@ async function processPageViewEvent(event: any): Promise<void> {
   // This could be used for analytics dashboards, A/B testing, etc.
 }
 
-async function processUserActionEvent(event: any): Promise<void> {
+async function processUserActionEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
   logger.debug('Processing user action event', {
     action: event.properties?.action,
     category: event.properties?.category,
@@ -189,7 +189,7 @@ async function processUserActionEvent(event: any): Promise<void> {
   // This could be used for feature usage tracking, conversion funnels, etc.
 }
 
-async function processErrorEvent(event: any): Promise<void> {
+async function processErrorEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
   logger.warn('Processing error event', {
     error: event.properties?.error,
     message: event.properties?.message,
@@ -201,7 +201,7 @@ async function processErrorEvent(event: any): Promise<void> {
   // This could be used for error tracking, alerting, etc.
 }
 
-async function processPerformanceEvent(event: any): Promise<void> {
+async function processPerformanceEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
   logger.debug('Processing performance event', {
     metric: event.properties?.metric,
     value: event.properties?.value,
@@ -213,7 +213,7 @@ async function processPerformanceEvent(event: any): Promise<void> {
   // This could be used for performance monitoring, alerting, etc.
 }
 
-async function processCustomEvent(event: any): Promise<void> {
+async function processCustomEvent(event: z.infer<typeof analyticsEventSchema>): Promise<void> {
   logger.debug('Processing custom event', {
     name: event.name,
     properties: event.properties,
@@ -223,17 +223,17 @@ async function processCustomEvent(event: any): Promise<void> {
   // Store custom event analytics
 }
 
-async function storeEventsInDatabase(events: any[]): Promise<void> {
+async function storeEventsInDatabase(events: z.infer<typeof analyticsEventSchema>[]): Promise<void> {
   try {
     // Store events in database for internal analytics
     // This would typically involve inserting into an analytics table
     logger.debug('Storing events in database', { eventCount: events.length });
   } catch (error) {
-    logger.error('Failed to store events in database', error);
+    logger.error('Failed to store events in database', error as Error);
   }
 }
 
-async function sendToExternalAnalytics(events: any[]): Promise<void> {
+async function sendToExternalAnalytics(events: z.infer<typeof analyticsEventSchema>[]): Promise<void> {
   try {
     const config = configService.getConfig();
 
@@ -245,11 +245,11 @@ async function sendToExternalAnalytics(events: any[]): Promise<void> {
 
     // Send to other external services as needed
   } catch (error) {
-    logger.error('Failed to send events to external analytics', error);
+    logger.error('Failed to send events to external analytics', error as Error);
   }
 }
 
-async function sendToGoogleAnalytics(events: any[]): Promise<void> {
+async function sendToGoogleAnalytics(events: z.infer<typeof analyticsEventSchema>[]): Promise<void> {
   try {
     // Send events to Google Analytics Measurement Protocol
     // This is a simplified implementation - in production you'd want to batch these
@@ -261,7 +261,7 @@ async function sendToGoogleAnalytics(events: any[]): Promise<void> {
       });
     }
   } catch (error) {
-    logger.error('Failed to send events to Google Analytics', error);
+    logger.error('Failed to send events to Google Analytics', error as Error);
   }
 }
 
@@ -284,7 +284,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    logger.error('Analytics health check failed', error);
+    logger.error('Analytics health check failed', error as Error);
     return NextResponse.json(
       { status: 'unhealthy', error: 'Health check failed' },
       { status: 500 }

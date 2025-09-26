@@ -12,6 +12,7 @@ import { EditWatchedDialog } from '@/components/watched/edit-watched-dialog';
 import { Button } from '@/components/ui/button';
 import { Search, Plus, BarChart3 } from 'lucide-react';
 import { WatchHistoryItem } from '@/state/types';
+import { CreateWatchHistoryData, UpdateWatchHistoryData } from '@/lib/db/watch-history';
 import { toast } from 'sonner';
 
 interface WatchHistoryResponse {
@@ -22,6 +23,7 @@ interface WatchHistoryResponse {
     total: number;
     totalPages: number;
   };
+  error?: string;
 }
 
 export default function WatchedPage() {
@@ -40,7 +42,7 @@ export default function WatchedPage() {
   });
 
   // Fetch watch history
-  const fetchWatchHistory = useCallback(async (page = 1, search = '', filters = {}) => {
+  const fetchWatchHistory = useCallback(async (page = 1, search = '') => {
     if (!session?.user?.id) return;
 
     try {
@@ -82,7 +84,7 @@ export default function WatchedPage() {
   }, [fetchWatchHistory]);
 
   // Add new item
-  const handleAddItem = async (data: any) => {
+  const handleAddItem = async (data: { movieId: number; watchedAt: Date; rating?: number; notes?: string }) => {
     if (!session?.user?.id) return;
 
     try {
@@ -91,7 +93,10 @@ export default function WatchedPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          userId: parseInt(session.user.id),
+        }),
       });
 
       const result = await response.json();
@@ -111,7 +116,7 @@ export default function WatchedPage() {
   };
 
   // Edit item
-  const handleEditItem = async (data: any) => {
+  const handleEditItem = async (data: UpdateWatchHistoryData) => {
     if (!editingItem) return;
 
     try {
@@ -220,19 +225,18 @@ export default function WatchedPage() {
             <PageHeader
               title="Watched Movies & TV Shows"
               description="Track and manage your viewing history"
-              children={
-                <div className="flex items-center gap-2">
-                  <Button onClick={handleBrowseMovies} variant="outline">
-                    <Search className="h-4 w-4 mr-2" />
-                    Find More
-                  </Button>
-                  <Button onClick={() => setShowAddDialog(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add to Watched
-                  </Button>
-                </div>
-              }
-            />
+            >
+              <div className="flex items-center gap-2">
+                <Button onClick={handleBrowseMovies} variant="outline">
+                  <Search className="h-4 w-4 mr-2" />
+                  Find More
+                </Button>
+                <Button onClick={() => setShowAddDialog(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add to Watched
+                </Button>
+              </div>
+            </PageHeader>
 
             <WatchedList
               items={items}

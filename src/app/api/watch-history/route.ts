@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const sortBy = (searchParams.get('sortBy') as 'watched_at' | 'rating' | 'title') || 'watched_at';
     const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     let result;
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     const watchHistoryData: CreateWatchHistoryData = {
       userId,
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get watch history statistics
-export async function PATCH(request: NextRequest) {
+export async function PATCH(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -138,7 +138,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
     const stats = await getWatchHistoryStats(userId);
 
     return NextResponse.json(stats);

@@ -10,7 +10,7 @@ export async function GET() {
     const config = configService.getConfig();
 
     // Check database connection
-    let connectionCheck = { status: 'down', message: 'Database connection failed' };
+    let connectionCheck: { status: string; message: string; details?: Record<string, unknown> } = { status: 'down', message: 'Database connection failed' };
 
     try {
       // Test database connection with a simple query
@@ -24,7 +24,7 @@ export async function GET() {
         },
       };
     } catch (dbError) {
-      logger.error('Database health check failed', dbError);
+      logger.error('Database health check failed', dbError as Error);
       connectionCheck = {
         status: 'down',
         message: 'Database connection failed',
@@ -35,7 +35,7 @@ export async function GET() {
     }
 
     // Check database performance
-    let performanceCheck = { status: 'up', message: 'Database performance normal' };
+    let performanceCheck: { status: string; message: string; details?: Record<string, unknown> } = { status: 'up', message: 'Database performance normal' };
 
     try {
       const perfStart = Date.now();
@@ -50,7 +50,7 @@ export async function GET() {
         };
       }
     } catch (perfError) {
-      logger.warn('Database performance check failed', perfError);
+      logger.warn('Database performance check failed', { error: perfError instanceof Error ? perfError.message : 'Performance check error' });
       performanceCheck = {
         status: 'degraded',
         message: 'Database performance check failed',
@@ -96,7 +96,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    logger.error('Database health check endpoint error', error);
+    logger.error('Database health check endpoint error', error as Error);
 
     return NextResponse.json(
       {

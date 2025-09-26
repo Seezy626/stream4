@@ -332,13 +332,26 @@ export interface TMDBError {
   success: boolean;
 }
 
-export interface TMDBRateLimitError extends Error {
-  retryAfter: number;
+export class TMDBRateLimitError extends Error {
+  public retryAfter: number;
+
+  constructor(message: string, retryAfter: number = 1) {
+    super(message);
+    this.name = 'TMDBRateLimitError';
+    this.retryAfter = retryAfter;
+  }
 }
 
-export interface TMDBApiError extends Error {
-  statusCode: number;
-  statusMessage: string;
+export class TMDBApiError extends Error {
+  public statusCode: number;
+  public statusMessage: string;
+
+  constructor(message: string, statusCode: number = 500, statusMessage: string = 'Internal Server Error') {
+    super(message);
+    this.name = 'TMDBApiError';
+    this.statusCode = statusCode;
+    this.statusMessage = statusMessage;
+  }
 }
 
 // Cache Types

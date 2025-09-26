@@ -82,7 +82,6 @@ export const useMovies = () => {
 
 export const useMovieSearch = () => {
   const { filters, setFilters, clearSearch } = useMovies();
-  const { setLoading } = useUI();
 
   const updateFilters = (newFilters: Partial<typeof filters>) => {
     setFilters(newFilters);
@@ -306,7 +305,7 @@ export const useModal = (modalId: string) => {
   return {
     isOpen,
     data,
-    open: (data?: any) => openModal(modalId, data),
+    open: (data?: unknown) => openModal(modalId, data),
     close: () => closeModal(modalId),
   };
 };

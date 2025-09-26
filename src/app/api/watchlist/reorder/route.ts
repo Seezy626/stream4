@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const userId = parseInt(session.user.id as string);
+    const userId = session.user.id as string;
 
     // TODO: Add user authorization check for each item
     // For now, we'll assume all items belong to the authenticated user

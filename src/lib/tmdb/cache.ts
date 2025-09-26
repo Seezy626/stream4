@@ -15,13 +15,13 @@ class TMDBCache {
   /**
    * Generate cache key for TMDB data
    */
-  private generateCacheKey(endpoint: string, params: Record<string, any> = {}): string {
+  private generateCacheKey(endpoint: string, params: Record<string, unknown> = {}): string {
     const sortedParams = Object.keys(params)
       .sort()
       .reduce((result, key) => {
         result[key] = params[key];
         return result;
-      }, {} as Record<string, any>);
+      }, {} as Record<string, unknown>);
 
     const paramString = JSON.stringify(sortedParams);
     return `tmdb:${endpoint}:${paramString}`;
@@ -32,7 +32,7 @@ class TMDBCache {
    */
   async set<T>(
     endpoint: string,
-    params: Record<string, any>,
+    params: Record<string, unknown>,
     data: T,
     options: TMDBCacheOptions = {}
   ): Promise<void> {
@@ -58,7 +58,7 @@ class TMDBCache {
    */
   async get<T>(
     endpoint: string,
-    params: Record<string, any>
+    params: Record<string, unknown>
   ): Promise<T | null> {
     const cacheKey = this.generateCacheKey(endpoint, params);
 
@@ -91,7 +91,7 @@ class TMDBCache {
   /**
    * Delete cache entry
    */
-  async delete(endpoint: string, params: Record<string, any> = {}): Promise<void> {
+  async delete(endpoint: string, params: Record<string, unknown> = {}): Promise<void> {
     const cacheKey = this.generateCacheKey(endpoint, params);
 
     try {
@@ -170,7 +170,7 @@ class TMDBCache {
    */
   async getOrSet<T>(
     endpoint: string,
-    params: Record<string, any>,
+    params: Record<string, unknown>,
     factory: () => Promise<T>,
     options: TMDBCacheOptions = {}
   ): Promise<T> {

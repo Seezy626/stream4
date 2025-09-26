@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { watchlistSlice } from '../watchlist-slice';
-import { WatchlistFilters, WatchlistItem } from '../../types';
+import { WatchlistFilters } from '../../types';
 import { createMockWatchlistItem } from '../../../__tests__/utils/test-factories';
 
 // Mock fetch globally
@@ -8,8 +8,6 @@ const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 // Mock the StateCreator type
-type MockSetState = jest.MockedFunction<(partial: any) => void>;
-type MockGetState = jest.MockedFunction<() => any>;
 
 const mockSet = jest.fn();
 const mockGet = jest.fn();
@@ -29,7 +27,7 @@ const createMockStore = (initialState = {}) => {
   mockGet.mockReturnValue(defaultState);
   mockSet.mockClear();
 
-  return watchlistSlice(mockSet as any, mockGet as any);
+  return watchlistSlice(mockSet as jest.MockedFunction<jest.Mock>, mockGet as jest.MockedFunction<jest.Mock>);
 };
 
 describe('watchlistSlice', () => {

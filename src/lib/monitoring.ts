@@ -2,7 +2,7 @@ import logger from './logger';
 
 interface ErrorEvent {
   error: Error;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   tags?: Record<string, string>;
   user?: {
     id?: string;
@@ -14,7 +14,7 @@ interface ErrorEvent {
     method?: string;
     userAgent?: string;
   };
-  extra?: Record<string, any>;
+  extra?: Record<string, unknown>;
 }
 
 interface PerformanceEvent {
@@ -22,7 +22,7 @@ interface PerformanceEvent {
   value: number;
   unit?: string;
   tags?: Record<string, string>;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 interface UserEvent {
@@ -30,7 +30,7 @@ interface UserEvent {
   category: string;
   label?: string;
   value?: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 class MonitoringService {
@@ -176,14 +176,14 @@ class MonitoringService {
     }
   }
 
-  private async sendToExternalService(type: string, data: any): Promise<void> {
+  private async sendToExternalService(type: string, data: unknown): Promise<void> {
     try {
       if (this.sentryDsn && type === 'error') {
-        await this.sendToSentry(data);
+        await this.sendToSentry(data as ErrorEvent);
       }
 
       if (this.analyticsId && type === 'user_event') {
-        await this.sendToAnalytics(data);
+        await this.sendToAnalytics(data as UserEvent);
       }
 
       // Send to our internal monitoring endpoint
@@ -209,7 +209,7 @@ class MonitoringService {
   }
 
   // Utility methods for common tracking scenarios
-  trackPageView(page: string, context?: Record<string, any>): void {
+  trackPageView(page: string, context?: Record<string, unknown>): void {
     this.trackUserEvent({
       action: 'page_view',
       category: 'navigation',
@@ -218,7 +218,7 @@ class MonitoringService {
     });
   }
 
-  trackFeatureUsage(feature: string, context?: Record<string, any>): void {
+  trackFeatureUsage(feature: string, context?: Record<string, unknown>): void {
     this.trackUserEvent({
       action: 'feature_used',
       category: 'engagement',
@@ -227,7 +227,7 @@ class MonitoringService {
     });
   }
 
-  trackError(error: Error, context?: Record<string, any>): void {
+  trackError(error: Error, context?: Record<string, unknown>): void {
     this.captureError({
       error,
       context: {
@@ -237,7 +237,7 @@ class MonitoringService {
     });
   }
 
-  trackPerformanceMetric(name: string, value: number, context?: Record<string, any>): void {
+  trackPerformanceMetric(name: string, value: number, context?: Record<string, unknown>): void {
     this.capturePerformance({
       name,
       value,

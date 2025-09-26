@@ -6,8 +6,6 @@ export async function GET() {
   const startTime = Date.now();
 
   try {
-    const config = configService.getConfig();
-
     // Check disk space (server-side only)
     const diskSpaceCheck = await checkDiskSpace();
 
@@ -38,7 +36,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    logger.error('Disk space health check endpoint error', error);
+    logger.error('Disk space health check endpoint error', error as Error);
 
     return NextResponse.json(
       {
@@ -52,7 +50,7 @@ export async function GET() {
   }
 }
 
-async function checkDiskSpace(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: any }> {
+async function checkDiskSpace(): Promise<{ status: 'up' | 'down' | 'degraded'; responseTime: number; message: string; details?: Record<string, unknown> }> {
   const startTime = Date.now();
 
   try {

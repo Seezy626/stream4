@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -37,9 +38,7 @@ import { cn } from '@/lib/utils';
 import { WatchHistoryItem } from '@/state/types';
 
 const editWatchedSchema = z.object({
-  watchedAt: z.date({
-    required_error: 'Please select when you watched this movie',
-  }),
+  watchedAt: z.date(),
   rating: z.number().min(1).max(10).optional(),
   notes: z.string().optional(),
 });
@@ -95,8 +94,8 @@ export function EditWatchedDialog({
     onClose();
   };
 
-  const watchedAt = form.watch('watchedAt');
-  const rating = form.watch('rating');
+  const _watchedAt = form.watch('watchedAt');
+  const _rating = form.watch('rating');
 
   if (!item) return null;
 
@@ -106,7 +105,7 @@ export function EditWatchedDialog({
         <DialogHeader>
           <DialogTitle>Edit Watched Entry</DialogTitle>
           <DialogDescription>
-            Update your watch history for "{item.movie.title}".
+            Update your watch history for &quot;{item.movie.title}&quot;.
           </DialogDescription>
         </DialogHeader>
 
@@ -115,9 +114,11 @@ export function EditWatchedDialog({
             {/* Movie Info (Read-only) */}
             <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
               {item.movie.posterPath && (
-                <img
+                <Image
                   src={`https://image.tmdb.org/t/p/w92${item.movie.posterPath}`}
                   alt={item.movie.title}
+                  width={48}
+                  height={64}
                   className="w-12 h-16 object-cover rounded"
                 />
               )}

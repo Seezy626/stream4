@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Film } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
-import { SearchResultsSkeleton } from "@/components/ui/skeleton";
 import { LazyWrapper, SearchResultsLoading } from "@/components/lazy-wrapper";
 
 // Lazy load components that aren't immediately needed

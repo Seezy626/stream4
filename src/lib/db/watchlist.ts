@@ -1,10 +1,10 @@
 import { eq, desc, asc, and, like, sql } from 'drizzle-orm';
-import { db } from './db';
-import { watchlist, movies, users } from '../schema';
+import { db } from '../db';
+import { watchlist, movies } from '../schema';
 import { WatchlistItem, WatchlistFilters } from '../../state/types';
 
 export interface CreateWatchlistData {
-  userId: number;
+  userId: string;
   movieId: number;
   priority?: 'low' | 'medium' | 'high';
 }
@@ -14,7 +14,7 @@ export interface UpdateWatchlistData {
 }
 
 export interface WatchlistQueryOptions {
-  userId?: number;
+  userId?: string;
   movieId?: number;
   limit?: number;
   offset?: number;
@@ -41,7 +41,7 @@ export async function addToWatchlist(data: CreateWatchlistData): Promise<Watchli
 
     // Fetch the complete watchlist item with movie details
     return await getWatchlistById(result.id);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error adding to watchlist:', error);
     throw new Error('Failed to add movie to watchlist');
   }
@@ -76,7 +76,7 @@ export async function getWatchlistById(id: number): Promise<WatchlistItem> {
     }
 
     return result[0] as WatchlistItem;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching watchlist by ID:', error);
     throw new Error('Failed to fetch watchlist entry');
   }
@@ -84,7 +84,7 @@ export async function getWatchlistById(id: number): Promise<WatchlistItem> {
 
 // Get user's watchlist with optional filtering and pagination
 export async function getUserWatchlist(
-  userId: number,
+  userId: string,
   options: WatchlistQueryOptions = {}
 ): Promise<{ items: WatchlistItem[]; total: number }> {
   try {
@@ -96,7 +96,31 @@ export async function getUserWatchlist(
       sortOrder = 'desc'
     } = options;
 
-    let query = db
+    // Build where condition
+    let whereCondition = eq(watchlist.userId, userId);
+
+    if (filters.priority) {
+      whereCondition = and(whereCondition, eq(watchlist.priority, filters.priority))!;
+    }
+
+    // Apply sorting
+    let sortColumn: typeof watchlist.addedAt | typeof movies.title | typeof watchlist.priority;
+    switch (sortBy) {
+      case 'title':
+        sortColumn = movies.title;
+        break;
+      case 'priority':
+        sortColumn = watchlist.priority;
+        break;
+      case 'added_at':
+      default:
+        sortColumn = watchlist.addedAt;
+        break;
+    }
+
+    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
+
+    const items = await db
       .select({
         id: watchlist.id,
         userId: watchlist.userId,
@@ -114,35 +138,10 @@ export async function getUserWatchlist(
       })
       .from(watchlist)
       .leftJoin(movies, eq(watchlist.movieId, movies.id))
-      .where(eq(watchlist.userId, userId));
-
-    // Apply filters
-    if (filters.priority) {
-      query = query.where(eq(watchlist.priority, filters.priority));
-    }
-
-    // Apply sorting
-    let sortColumn: any;
-    switch (sortBy) {
-      case 'title':
-        sortColumn = movies.title;
-        break;
-      case 'priority':
-        sortColumn = watchlist.priority;
-        break;
-      case 'added_at':
-      default:
-        sortColumn = watchlist.addedAt;
-        break;
-    }
-
-    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
-    query = query.orderBy(sortDirection);
-
-    // Apply pagination
-    query = query.limit(limit).offset(offset);
-
-    const items = await query;
+      .where(whereCondition)
+      .orderBy(sortDirection)
+      .limit(limit)
+      .offset(offset);
 
     // Get total count
     const [{ count }] = await db
@@ -154,7 +153,7 @@ export async function getUserWatchlist(
       items: items as WatchlistItem[],
       total: count,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching user watchlist:', error);
     throw new Error('Failed to fetch watchlist');
   }
@@ -162,7 +161,7 @@ export async function getUserWatchlist(
 
 // Get watchlist entry for a specific movie
 export async function getWatchlistByMovie(
-  userId: number,
+  userId: string,
   movieId: number
 ): Promise<WatchlistItem | null> {
   try {
@@ -193,7 +192,7 @@ export async function getWatchlistByMovie(
       .limit(1);
 
     return result[0] as WatchlistItem || null;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching watchlist by movie:', error);
     throw new Error('Failed to fetch watchlist for movie');
   }
@@ -216,7 +215,7 @@ export async function updateWatchlist(
     }
 
     return await getWatchlistById(result.id);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating watchlist:', error);
     throw new Error('Failed to update watchlist entry');
   }
@@ -239,7 +238,7 @@ export async function updateWatchlistPriority(
     }
 
     return await getWatchlistById(result.id);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating watchlist priority:', error);
     throw new Error('Failed to update watchlist priority');
   }
@@ -256,7 +255,7 @@ export async function removeFromWatchlist(id: number): Promise<void> {
     if (!result) {
       throw new Error('Watchlist entry not found');
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error removing from watchlist:', error);
     throw new Error('Failed to remove movie from watchlist');
   }
@@ -264,7 +263,7 @@ export async function removeFromWatchlist(id: number): Promise<void> {
 
 // Search watchlist by title
 export async function searchWatchlist(
-  userId: number,
+  userId: string,
   query: string,
   options: Omit<WatchlistQueryOptions, 'userId'> = {}
 ): Promise<{ items: WatchlistItem[]; total: number }> {
@@ -317,14 +316,14 @@ export async function searchWatchlist(
       items: items as WatchlistItem[],
       total: count,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error searching watchlist:', error);
     throw new Error('Failed to search watchlist');
   }
 }
 
 // Get watchlist statistics
-export async function getWatchlistStats(userId: number): Promise<{
+export async function getWatchlistStats(userId: string): Promise<{
   totalItems: number;
   byPriority: {
     low: number;
@@ -358,7 +357,7 @@ export async function getWatchlistStats(userId: number): Promise<{
       },
       averagePriority: Number(averagePriority.toFixed(2)),
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching watchlist stats:', error);
     throw new Error('Failed to fetch watchlist statistics');
   }
@@ -366,7 +365,7 @@ export async function getWatchlistStats(userId: number): Promise<{
 
 // Check if a movie is in user's watchlist
 export async function isMovieInWatchlist(
-  userId: number,
+  userId: string,
   movieId: number
 ): Promise<boolean> {
   try {
@@ -381,7 +380,7 @@ export async function isMovieInWatchlist(
       );
 
     return count > 0;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error checking if movie is in watchlist:', error);
     throw new Error('Failed to check watchlist status');
   }
@@ -389,7 +388,7 @@ export async function isMovieInWatchlist(
 
 // Bulk update priorities
 export async function bulkUpdatePriorities(
-  userId: number,
+  userId: string,
   updates: Array<{ id: number; priority: 'low' | 'medium' | 'high' }>
 ): Promise<WatchlistItem[]> {
   try {
@@ -401,7 +400,7 @@ export async function bulkUpdatePriorities(
     }
 
     return results;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error bulk updating priorities:', error);
     throw new Error('Failed to bulk update priorities');
   }
@@ -409,7 +408,7 @@ export async function bulkUpdatePriorities(
 
 // Reorder watchlist items (for drag and drop)
 export async function reorderWatchlist(
-  userId: number,
+  userId: string,
   orderedIds: number[]
 ): Promise<WatchlistItem[]> {
   try {
@@ -426,7 +425,7 @@ export async function reorderWatchlist(
     }
 
     return results;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error reordering watchlist:', error);
     throw new Error('Failed to reorder watchlist');
   }
@@ -434,7 +433,7 @@ export async function reorderWatchlist(
 
 // Get watchlist with custom ordering
 export async function getUserWatchlistOrdered(
-  userId: number,
+  userId: string,
   options: WatchlistQueryOptions & { orderBy?: 'added_at' | 'priority' | 'title' | 'custom' } = {}
 ): Promise<{ items: WatchlistItem[]; total: number }> {
   try {
@@ -442,12 +441,35 @@ export async function getUserWatchlistOrdered(
       limit = 20,
       offset = 0,
       filters = {},
-      sortBy = 'added_at',
       sortOrder = 'desc',
       orderBy = 'added_at'
     } = options;
 
-    let query = db
+    // Build where condition
+    let whereCondition = eq(watchlist.userId, userId);
+
+    if (filters.priority) {
+      whereCondition = and(whereCondition, eq(watchlist.priority, filters.priority))!;
+    }
+
+    // Apply ordering
+    let sortColumn: typeof watchlist.addedAt | typeof movies.title | typeof watchlist.priority;
+    switch (orderBy) {
+      case 'title':
+        sortColumn = movies.title;
+        break;
+      case 'priority':
+        sortColumn = watchlist.priority;
+        break;
+      case 'added_at':
+      default:
+        sortColumn = watchlist.addedAt;
+        break;
+    }
+
+    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
+
+    const items = await db
       .select({
         id: watchlist.id,
         userId: watchlist.userId,
@@ -465,35 +487,10 @@ export async function getUserWatchlistOrdered(
       })
       .from(watchlist)
       .leftJoin(movies, eq(watchlist.movieId, movies.id))
-      .where(eq(watchlist.userId, userId));
-
-    // Apply filters
-    if (filters.priority) {
-      query = query.where(eq(watchlist.priority, filters.priority));
-    }
-
-    // Apply ordering
-    let sortColumn: any;
-    switch (orderBy) {
-      case 'title':
-        sortColumn = movies.title;
-        break;
-      case 'priority':
-        sortColumn = watchlist.priority;
-        break;
-      case 'added_at':
-      default:
-        sortColumn = watchlist.addedAt;
-        break;
-    }
-
-    const sortDirection = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
-    query = query.orderBy(sortDirection);
-
-    // Apply pagination
-    query = query.limit(limit).offset(offset);
-
-    const items = await query;
+      .where(whereCondition)
+      .orderBy(sortDirection)
+      .limit(limit)
+      .offset(offset);
 
     // Get total count
     const [{ count }] = await db
@@ -505,7 +502,7 @@ export async function getUserWatchlistOrdered(
       items: items as WatchlistItem[],
       total: count,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching ordered watchlist:', error);
     throw new Error('Failed to fetch ordered watchlist');
   }

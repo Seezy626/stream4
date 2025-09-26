@@ -55,7 +55,7 @@ class TMDBClient {
     this.rateLimitRemaining--;
   }
 
-  private buildUrl(endpoint: string, params: Record<string, any> = {}): string {
+  private buildUrl(endpoint: string, params: Record<string, unknown> = {}): string {
     const url = new URL(`${this.config.baseUrl}${endpoint}`);
     url.searchParams.set('api_key', this.config.apiKey);
 
@@ -71,7 +71,7 @@ class TMDBClient {
 
   private async makeRequest<T>(
     endpoint: string,
-    params: Record<string, any> = {},
+    params: Record<string, unknown> = {},
     options: RequestInit = {}
   ): Promise<T> {
     await this.enforceRateLimit();
@@ -145,11 +145,11 @@ class TMDBClient {
     }
   }
 
-  async get<T>(endpoint: string, params: Record<string, any> = {}): Promise<T> {
+  async get<T>(endpoint: string, params: Record<string, unknown> = {}): Promise<T> {
     return this.makeRequest<T>(endpoint, params, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, params: Record<string, any> = {}, body?: any): Promise<T> {
+  async post<T>(endpoint: string, params: Record<string, unknown> = {}, body?: unknown): Promise<T> {
     return this.makeRequest<T>(endpoint, params, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,

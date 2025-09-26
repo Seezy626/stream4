@@ -1,9 +1,16 @@
 import configService from './config';
 import logger from './logger';
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
+  }
+}
+
 interface AnalyticsEvent {
   name: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   timestamp: string;
   sessionId?: string;
   userId?: string;
@@ -38,7 +45,7 @@ interface ErrorEvent extends AnalyticsEvent {
     message: string;
     stack?: string;
     severity: 'low' | 'medium' | 'high' | 'critical';
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
   };
 }
 
@@ -48,7 +55,7 @@ interface PerformanceEvent extends AnalyticsEvent {
     metric: string;
     value: number;
     unit: string;
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
   };
 }
 
@@ -98,11 +105,11 @@ class AnalyticsService {
       document.head.appendChild(script);
 
       // Initialize gtag
-      (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(...args: any[]) {
-        (window as any).dataLayer.push(args);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: unknown[]) {
+        window.dataLayer!.push(args);
       }
-      (window as any).gtag = gtag;
+      window.gtag = gtag;
 
       gtag('js', new Date());
       gtag('config', this.config.monitoring.analyticsId, {
@@ -116,7 +123,7 @@ class AnalyticsService {
         analyticsId: this.config.monitoring.analyticsId,
       });
     } catch (error) {
-      logger.error('Failed to initialize Google Analytics', error);
+      logger.error('Failed to initialize Google Analytics', error as Error);
     }
   }
 
@@ -153,7 +160,7 @@ class AnalyticsService {
     try {
       await this.sendEventsToAnalytics(eventsToFlush);
     } catch (error) {
-      logger.error('Failed to flush analytics events', error, {
+      logger.error('Failed to flush analytics events', error as Error, {
         eventCount: eventsToFlush.length,
       });
 
@@ -187,7 +194,7 @@ class AnalyticsService {
     }
   }
 
-  private createBaseEvent(name: string, properties?: Record<string, any>): AnalyticsEvent {
+  private createBaseEvent(name: string, properties?: Record<string, unknown>): AnalyticsEvent {
     return {
       name,
       properties,
@@ -226,8 +233,8 @@ class AnalyticsService {
     this.queueEvent(event);
 
     // Send to Google Analytics if available
-    if (this.isClient && (window as any).gtag) {
-      (window as any).gtag('config', this.config.monitoring.analyticsId, {
+    if (this.isClient && window.gtag) {
+      window.gtag('config', this.config.monitoring.analyticsId, {
         page_path: page,
         page_title: title || document.title,
       });
@@ -254,8 +261,8 @@ class AnalyticsService {
     this.queueEvent(event);
 
     // Send to Google Analytics if available
-    if (this.isClient && (window as any).gtag) {
-      (window as any).gtag('event', action, {
+    if (this.isClient && window.gtag) {
+      window.gtag('event', action, {
         event_category: category,
         event_label: label,
         value: value,
@@ -271,7 +278,7 @@ class AnalyticsService {
   /**
    * Track an error
    */
-  trackError(error: string, message: string, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium', context?: Record<string, any>): void {
+  trackError(error: string, message: string, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium', context?: Record<string, unknown>): void {
     if (!this.config.monitoring.enabled) return;
 
     const event: ErrorEvent = {
@@ -286,8 +293,8 @@ class AnalyticsService {
     this.queueEvent(event);
 
     // Send to Google Analytics if available
-    if (this.isClient && (window as any).gtag) {
-      (window as any).gtag('event', 'exception', {
+    if (this.isClient && window.gtag) {
+      window.gtag('event', 'exception', {
         description: `${error}: ${message}`,
         fatal: severity === 'critical',
         custom_map: {
@@ -302,7 +309,7 @@ class AnalyticsService {
   /**
    * Track a performance metric
    */
-  trackPerformance(metric: string, value: number, unit: string, context?: Record<string, any>): void {
+  trackPerformance(metric: string, value: number, unit: string, context?: Record<string, unknown>): void {
     if (!this.config.monitoring.enabled || !this.config.features.advancedAnalytics) return;
 
     const event: PerformanceEvent = {
@@ -322,7 +329,7 @@ class AnalyticsService {
   /**
    * Track custom event
    */
-  trackCustomEvent(name: string, properties?: Record<string, any>): void {
+  trackCustomEvent(name: string, properties?: Record<string, unknown>): void {
     if (!this.config.monitoring.enabled) return;
 
     const event = this.createBaseEvent(name, properties);
@@ -338,8 +345,8 @@ class AnalyticsService {
     logger.info('Analytics user context set', { userId });
 
     // Update Google Analytics user properties if available
-    if (this.isClient && (window as any).gtag) {
-      (window as any).gtag('config', this.config.monitoring.analyticsId, {
+    if (this.isClient && window.gtag) {
+      window.gtag('config', this.config.monitoring.analyticsId, {
         user_id: userId,
         custom_map: {
           session_id: this.sessionId,
@@ -358,7 +365,7 @@ class AnalyticsService {
   /**
    * Get analytics configuration summary
    */
-  getConfigSummary(): Record<string, any> {
+  getConfigSummary(): Record<string, unknown> {
     return {
       enabled: this.config.monitoring.enabled,
       hasGoogleAnalytics: !!this.config.monitoring.analyticsId,

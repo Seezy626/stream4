@@ -10,8 +10,8 @@ interface SecurityEvent {
   ip?: string;
   userAgent?: string;
   timestamp: number;
-  context?: Record<string, any>;
-  evidence?: Record<string, any>;
+  context?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
 }
 
 interface SecurityAlert {
@@ -361,7 +361,7 @@ class SecurityMonitor {
   /**
    * Monitor for common attack patterns
    */
-  detectAttackPatterns(input: string, context: Record<string, any> = {}): void {
+  detectAttackPatterns(input: string, context: Record<string, unknown> = {}): void {
     // SQL injection patterns
     const sqlPatterns = [
       /(\bselect\b|\bunion\b|\binsert\b|\bupdate\b|\bdelete\b|\bdrop\b|\balter\b)/i,

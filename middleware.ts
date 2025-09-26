@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import rateLimitService from '@/lib/rate-limit';
 
 export default withAuth(
-  async function middleware(req) {
+  async function middleware(req: any) {
     const { pathname } = req.nextUrl;
-    const ip = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+    const ip = (req as any).ip || req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
     const userAgent = req.headers.get('user-agent') || 'unknown';
 
     // Generate unique identifier for rate limiting

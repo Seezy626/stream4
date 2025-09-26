@@ -1,6 +1,6 @@
 // State Types for Zustand Store
 export interface User {
-  id: number;
+  id: string;
   name?: string | null;
   email: string;
   emailVerified?: Date | null;
@@ -36,8 +36,8 @@ export interface MovieFilters {
 }
 
 export interface MovieState {
-  searchResults: any[];
-  selectedMovie: any | null;
+  searchResults: unknown[];
+  selectedMovie: unknown | null;
   filters: MovieFilters;
   isLoading: boolean;
   error: string | null;
@@ -48,11 +48,13 @@ export interface MovieState {
 
 export interface WatchHistoryItem {
   id: number;
-  userId: number;
+  userId: string;
   movieId: number;
   watchedAt: Date;
   rating?: number;
   notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
   movie: {
     id: number;
     tmdbId: number;
@@ -82,7 +84,7 @@ export interface WatchHistoryState {
 
 export interface WatchlistItem {
   id: number;
-  userId: number;
+  userId: string;
   movieId: number;
   addedAt: Date;
   priority: 'low' | 'medium' | 'high';
@@ -103,7 +105,7 @@ export interface WatchlistFilters {
 }
 
 export interface WatchlistState {
-  items: WatchlistItem[];
+  watchlistItems: WatchlistItem[];
   filters: WatchlistFilters;
   isLoading: boolean;
   error: string | null;
@@ -118,14 +120,14 @@ export interface UIState {
   modals: {
     [key: string]: {
       isOpen: boolean;
-      data?: any;
+      data?: unknown;
     };
   };
   notifications: Notification[];
   search: {
     query: string;
     isActive: boolean;
-    results: any[];
+    results: unknown[];
   };
   theme: 'light' | 'dark' | 'system';
 }
@@ -156,8 +158,8 @@ export interface AuthActions {
 }
 
 export interface MovieActions {
-  setSearchResults: (results: any[], totalPages: number, totalResults: number) => void;
-  setSelectedMovie: (movie: any | null) => void;
+  setSearchResults: (results: unknown[], totalPages: number, totalResults: number) => void;
+  setSelectedMovie: (movie: unknown | null) => void;
   setFilters: (filters: Partial<MovieFilters>) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -206,11 +208,20 @@ export interface WatchlistActions {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setPage: (page: number) => void;
+  // API integration actions
+  fetchWatchlist: (page?: number, search?: string, filters?: Partial<WatchlistFilters>) => Promise<void>;
+  addToWatchlist: (data: { movieId: number; priority?: 'low' | 'medium' | 'high'; userId?: number }) => Promise<WatchlistItem>;
+  updateWatchlist: (id: number, updates: Partial<WatchlistItem>) => Promise<WatchlistItem>;
+  updateWatchlistPriority: (id: number, priority: 'low' | 'medium' | 'high') => Promise<WatchlistItem>;
+  removeFromWatchlist: (id: number) => Promise<void>;
+  searchWatchlist: (query: string, page?: number) => Promise<void>;
+  getWatchlistStats: () => Promise<unknown>;
+  bulkUpdatePriorities: (updates: { id: number; priority: 'low' | 'medium' | 'high' }[]) => Promise<unknown>;
 }
 
 export interface UIActions {
   setLoading: (loading: boolean, message?: string) => void;
-  openModal: (modalId: string, data?: any) => void;
+  openModal: (modalId: string, data?: unknown) => void;
   closeModal: (modalId: string) => void;
   closeAllModals: () => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
@@ -218,7 +229,7 @@ export interface UIActions {
   clearNotifications: () => void;
   setSearchQuery: (query: string) => void;
   setSearchActive: (active: boolean) => void;
-  setSearchResults: (results: any[]) => void;
+  setSearchResults: (results: unknown[]) => void;
   setTheme: (theme: UIState['theme']) => void;
 }
 
