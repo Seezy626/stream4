@@ -40,15 +40,13 @@ interface WatchlistCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onMarkAsWatched: () => void;
-  onUpdatePriority: (priority: 'low' | 'medium' | 'high') => void;
 }
 
 export function WatchlistCard({
   item,
   onEdit,
   onDelete,
-  onMarkAsWatched,
-  onUpdatePriority
+  onMarkAsWatched
 }: WatchlistCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

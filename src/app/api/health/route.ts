@@ -96,11 +96,11 @@ export async function GET(request: NextRequest) {
 }
 
 // Handle HEAD requests for simple health checks
-export async function HEAD(_request: NextRequest) {
+export async function HEAD() {
   try {
     const healthResult = await healthCheckService.performHealthCheck();
     const statusCode = healthResult.status === 'healthy' ? 200 :
-                      healthResult.status === 'degraded' ? 200 : 503;
+                       healthResult.status === 'degraded' ? 200 : 503;
 
     return new NextResponse(null, {
       status: statusCode,

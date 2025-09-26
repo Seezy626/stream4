@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Film, Search, Plus, Heart } from "lucide-react"
+import { Film, Search, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface EmptyStateProps {

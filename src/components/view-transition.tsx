@@ -13,15 +13,6 @@ export function ViewTransitionProvider({ children }: { children: React.ReactNode
     // Check if View Transition API is supported
     if (!document.startViewTransition) return
 
-    // Handle view transitions for navigation
-    const handleViewTransition = () => {
-      if (document.startViewTransition) {
-        document.startViewTransition(() => {
-          // The navigation will happen automatically
-        })
-      }
-    }
-
     // Add transition styles for common elements
     const style = document.createElement("style")
     style.textContent = `

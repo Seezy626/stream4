@@ -172,6 +172,8 @@ class RateLimiter {
 }
 
 // Pre-configured rate limiters for different use cases
+type RateLimitStatus = Awaited<ReturnType<RateLimiter['getStatus']>>;
+
 class RateLimitService {
   // General API rate limiter (100 requests per minute)
   private generalApiLimiter = new RateLimiter({
@@ -247,11 +249,11 @@ class RateLimitService {
    * Get status for all rate limiters
    */
   async getAllStatus(identifier: string): Promise<{
-    general: Awaited<ReturnType<typeof this.generalApiLimiter.getStatus>>;
-    search: Awaited<ReturnType<typeof this.searchApiLimiter.getStatus>>;
-    auth: Awaited<ReturnType<typeof this.authLimiter.getStatus>>;
-    tmdb: Awaited<ReturnType<typeof this.tmdbLimiter.getStatus>>;
-    upload: Awaited<ReturnType<typeof this.uploadLimiter.getStatus>>;
+    general: RateLimitStatus;
+    search: RateLimitStatus;
+    auth: RateLimitStatus;
+    tmdb: RateLimitStatus;
+    upload: RateLimitStatus;
   }> {
     const [general, search, auth, tmdb, upload] = await Promise.all([
       this.generalApiLimiter.getStatus(identifier),

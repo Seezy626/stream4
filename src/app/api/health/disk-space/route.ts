@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import configService from '@/lib/config';
 import logger from '@/lib/logger';
 
 export async function GET() {

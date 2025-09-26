@@ -2,32 +2,8 @@ import { tmdbEnhancedClient } from './enhanced-client';
 import { db } from '../db';
 import { movies } from '../schema';
 import { eq } from 'drizzle-orm';
-
-export interface TMDBMovie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path?: string;
-  backdrop_path?: string;
-  release_date?: string;
-  vote_average?: number;
-  vote_count?: number;
-  genre_ids?: number[];
-  media_type: 'movie' | 'tv';
-}
-
-export interface TMDBTVShow {
-  id: number;
-  name: string;
-  overview: string;
-  poster_path?: string;
-  backdrop_path?: string;
-  first_air_date?: string;
-  vote_average?: number;
-  vote_count?: number;
-  genre_ids?: number[];
-  media_type: 'movie' | 'tv';
-}
+import { TMDBMovie, TMDBTVShow, TMDBMovieDetails, TMDBTVShowDetails, TMDBSearchResults } from '@/types/tmdb';
+import type { InferInsertModel } from 'drizzle-orm';
 
 /**
  * Sync TMDB movie data with local database
@@ -46,23 +22,23 @@ export async function syncMovieWithTMDB(tmdbId: number): Promise<number> {
     }
 
     // Fetch movie details from TMDB
-    const movieDetails = await tmdbEnhancedClient.getMovieDetails(tmdbId);
+    const movieDetails = await tmdbEnhancedClient.getMovieDetails(tmdbId) as TMDBMovieDetails;
 
     // Insert movie into database
     const [newMovie] = await db
       .insert(movies)
       .values({
         tmdbId: movieDetails.id,
-        title: movieDetails.title,
-        overview: movieDetails.overview,
-        releaseDate: movieDetails.release_date,
-        posterPath: movieDetails.poster_path,
-        backdropPath: movieDetails.backdrop_path,
-        voteAverage: movieDetails.vote_average,
-        voteCount: movieDetails.vote_count,
+        title: movieDetails.title || '',
+        overview: movieDetails.overview || null,
+        releaseDate: movieDetails.release_date || null,
+        posterPath: movieDetails.poster_path || null,
+        backdropPath: movieDetails.backdrop_path || null,
+        voteAverage: movieDetails.vote_average || null,
+        voteCount: movieDetails.vote_count || null,
         genreIds: movieDetails.genres?.map((g: { id: number }) => g.id) || [],
         mediaType: 'movie',
-      })
+      } as InferInsertModel<typeof movies>)
       .returning();
 
     return newMovie.id;
@@ -89,23 +65,23 @@ export async function syncTVShowWithTMDB(tmdbId: number): Promise<number> {
     }
 
     // Fetch TV show details from TMDB
-    const tvDetails = await tmdbEnhancedClient.getTVShowDetails(tmdbId);
+    const tvDetails = await tmdbEnhancedClient.getTVShowDetails(tmdbId) as TMDBTVShowDetails;
 
     // Insert TV show into database
     const [newMovie] = await db
       .insert(movies)
       .values({
         tmdbId: tvDetails.id,
-        title: tvDetails.name,
-        overview: tvDetails.overview,
-        releaseDate: tvDetails.first_air_date,
-        posterPath: tvDetails.poster_path,
-        backdropPath: tvDetails.backdrop_path,
-        voteAverage: tvDetails.vote_average,
-        voteCount: tvDetails.vote_count,
+        title: tvDetails.name || '',
+        overview: tvDetails.overview || null,
+        releaseDate: tvDetails.first_air_date || null,
+        posterPath: tvDetails.poster_path || null,
+        backdropPath: tvDetails.backdrop_path || null,
+        voteAverage: tvDetails.vote_average || null,
+        voteCount: tvDetails.vote_count || null,
         genreIds: tvDetails.genres?.map((g: { id: number }) => g.id) || [],
         mediaType: 'tv',
-      })
+      } as InferInsertModel<typeof movies>)
       .returning();
 
     return newMovie.id;
@@ -151,18 +127,18 @@ export async function searchAndSyncTMDB(
   try {
     const { type = 'multi', page = 1, limit = 20 } = options;
 
-    let searchResults;
+    let searchResults: TMDBSearchResults;
 
     switch (type) {
       case 'movie':
-        searchResults = await tmdbEnhancedClient.searchMovies(query, { page });
+        searchResults = await tmdbEnhancedClient.searchMovies(query, { page }) as TMDBSearchResults;
         break;
       case 'tv':
-        searchResults = await tmdbEnhancedClient.searchTVShows(query, { page });
+        searchResults = await tmdbEnhancedClient.searchTVShows(query, { page }) as TMDBSearchResults;
         break;
       case 'multi':
       default:
-        searchResults = await tmdbEnhancedClient.multiSearch(query, { page });
+        searchResults = await tmdbEnhancedClient.multiSearch(query, { page }) as TMDBSearchResults;
         break;
     }
 
@@ -172,7 +148,7 @@ export async function searchAndSyncTMDB(
       .slice(0, limit);
 
     return {
-      results: filteredResults,
+      results: filteredResults as (TMDBMovie | TMDBTVShow)[],
       totalResults: searchResults.total_results || 0,
       totalPages: searchResults.total_pages || 0,
     };
@@ -191,7 +167,7 @@ export async function getMovieWithSync(tmdbId: number): Promise<{
 }> {
   try {
     const localId = await syncMovieWithTMDB(tmdbId);
-    const tmdbData = await tmdbEnhancedClient.getMovieDetails(tmdbId);
+    const tmdbData = await tmdbEnhancedClient.getMovieDetails(tmdbId) as Record<string, unknown>;
 
     return { localId, tmdbData };
   } catch (error) {
@@ -209,7 +185,7 @@ export async function getTVShowWithSync(tmdbId: number): Promise<{
 }> {
   try {
     const localId = await syncTVShowWithTMDB(tmdbId);
-    const tmdbData = await tmdbEnhancedClient.getTVShowDetails(tmdbId);
+    const tmdbData = await tmdbEnhancedClient.getTVShowDetails(tmdbId) as Record<string, unknown>;
 
     return { localId, tmdbData };
   } catch (error) {

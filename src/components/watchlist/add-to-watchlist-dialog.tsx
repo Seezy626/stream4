@@ -67,7 +67,7 @@ export function AddToWatchlistDialog({
 }: AddToWatchlistDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching] = useState(false);
 
   const form = useForm<AddToWatchlistFormData>({
     resolver: zodResolver(addToWatchlistSchema),

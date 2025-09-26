@@ -223,7 +223,8 @@ class SecurityMonitor {
         events = events.filter(e => e.ip === filters.ip);
       }
       if (filters.since) {
-        events = events.filter(e => e.timestamp >= filters.since);
+        const since = filters.since;
+        events = events.filter(e => e.timestamp >= since);
       }
     }
 

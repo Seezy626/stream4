@@ -1,18 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { SignInForm } from "@/components/auth/signin-form"
 import { Button } from "@/components/ui/button"
 import { Film } from "lucide-react"
 
+function SignInMessage() {
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const message = searchParams.get('message')
+
+  if (!message) return null
+
+  return (
+    <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
+      {message}
+    </div>
+  )
+}
+
 export default function SignInPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [showSignUp, setShowSignUp] = useState(false)
-
-  const message = searchParams.get('message')
 
   if (showSignUp) {
     router.push('/auth/signup')
@@ -33,11 +43,9 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {message && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
-            {message}
-          </div>
-        )}
+        <Suspense fallback={null}>
+          <SignInMessage />
+        </Suspense>
 
         <SignInForm />
 

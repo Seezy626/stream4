@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { WatchlistItem } from '@/state/types';
 import { WatchlistCard } from './watchlist-card';
 import { Button } from '@/components/ui/button';
-import { Grid, List, LayoutGrid } from 'lucide-react';
+import { List, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WatchlistGridProps {
@@ -12,7 +12,6 @@ interface WatchlistGridProps {
   onEdit: (item: WatchlistItem) => void;
   onDelete: (id: number) => void;
   onMarkAsWatched: (id: number) => void;
-  onUpdatePriority: (id: number, priority: 'low' | 'medium' | 'high') => void;
   isLoading?: boolean;
   className?: string;
 }
@@ -24,7 +23,6 @@ export function WatchlistGrid({
   onEdit,
   onDelete,
   onMarkAsWatched,
-  onUpdatePriority,
   isLoading = false,
   className,
 }: WatchlistGridProps) {
@@ -147,7 +145,6 @@ export function WatchlistGrid({
             onEdit={() => onEdit(item)}
             onDelete={() => onDelete(item.id)}
             onMarkAsWatched={() => onMarkAsWatched(item.id)}
-            onUpdatePriority={(priority) => onUpdatePriority(item.id, priority)}
           />
         ))}
       </div>

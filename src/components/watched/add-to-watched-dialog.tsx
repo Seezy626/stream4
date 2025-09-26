@@ -70,7 +70,7 @@ export function AddToWatchedDialog({
 }: AddToWatchedDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching] = useState(false);
 
   const form = useForm<AddToWatchedFormData>({
     resolver: zodResolver(addToWatchedSchema),
@@ -110,9 +110,6 @@ export function AddToWatchedDialog({
     setSearchQuery('');
     onClose();
   };
-
-  const _watchedAt = form.watch('watchedAt');
-  const _rating = form.watch('rating');
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

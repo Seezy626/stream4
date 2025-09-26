@@ -1,32 +1,27 @@
-import { StateCreator } from 'zustand';
-import { AppState, WatchlistState, WatchlistActions, WatchlistItem } from '../types';
+import { WatchlistState, WatchlistActions, WatchlistItem, WatchlistFilters } from '../types';
 
 export interface WatchlistSlice extends WatchlistState, WatchlistActions {}
 
-export const watchlistSlice: StateCreator<
-  AppState & WatchlistActions,
-  [],
-  [],
-  WatchlistSlice
-> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const watchlistSlice = (set: any, get: any) => ({
   // Initial watchlist state
   watchlistItems: [],
-  filters: {},
-  isLoading: false,
-  error: null,
-  currentPage: 1,
-  totalPages: 0,
-  totalResults: 0,
+  watchlistFilters: {},
+  watchlistIsLoading: false,
+  watchlistError: null,
+  watchlistCurrentPage: 1,
+  watchlistTotalPages: 0,
+  watchlistTotalResults: 0,
 
   // Watchlist actions
-  setItems: (items) => {
+  setWatchlistItems: (items: WatchlistItem[]) => {
     set({
       watchlistItems: items,
-      error: null,
+      watchlistError: null,
     });
   },
 
-  addItem: (item) => {
+  addWatchlistItem: (item: Omit<WatchlistItem, 'id'>) => {
     const currentItems = get().watchlistItems;
     const newItem: WatchlistItem = {
       ...item,
@@ -35,59 +30,57 @@ export const watchlistSlice: StateCreator<
 
     set({
       watchlistItems: [newItem, ...currentItems],
-      error: null,
+      watchlistError: null,
     });
   },
 
-  updateItem: (id, updates) => {
+  updateWatchlistItem: (id: number, updates: Partial<WatchlistItem>) => {
     const currentItems = get().watchlistItems;
     set({
-      watchlistItems: currentItems.map((item) =>
+      watchlistItems: currentItems.map((item: WatchlistItem) =>
         item.id === id ? { ...item, ...updates } : item
       ),
-      error: null,
+      watchlistError: null,
     });
   },
 
-  removeItem: (id) => {
+  removeWatchlistItem: (id: number) => {
     const currentItems = get().watchlistItems;
     set({
-      watchlistItems: currentItems.filter((item) => item.id !== id),
-      error: null,
+      watchlistItems: currentItems.filter((item: WatchlistItem) => item.id !== id),
+      watchlistError: null,
     });
   },
 
-  setFilters: (filters) => {
-    const currentFilters = get().filters;
+  setWatchlistFilters: (filters: Partial<WatchlistFilters>) => {
+    const currentFilters = get().watchlistFilters;
     set({
-      filters: {
+      watchlistFilters: {
         ...currentFilters,
         ...filters,
       },
-      currentPage: 1, // Reset to first page when filters change
+      watchlistCurrentPage: 1, // Reset to first page when filters change
     });
   },
 
-  setLoading: (isLoading) => {
-    set({ isLoading });
+  setWatchlistLoading: (isLoading: boolean) => {
+    set({ watchlistIsLoading: isLoading });
   },
 
-  setError: (error) => {
-    set({ error, isLoading: false });
+  setWatchlistError: (error: string | null) => {
+    set({ watchlistError: error, watchlistIsLoading: false });
   },
 
-  setPage: (page) => {
-    set({ currentPage: page });
+  setWatchlistPage: (page: number) => {
+    set({ watchlistCurrentPage: page });
   },
 
   // API integration actions
-  fetchWatchlist: async (page = 1, search = '', filters = {}) => {
-    const { setLoading, setError, setItems } = get();
+  fetchWatchlist: async (page = 1, search = '', filters: Partial<WatchlistFilters> = {}) => {
+    set({ watchlistIsLoading: true });
+    set({ watchlistError: null });
 
     try {
-      setLoading(true);
-      setError(null);
-
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20',
@@ -104,31 +97,29 @@ export const watchlistSlice: StateCreator<
       }
 
       if (page === 1) {
-        setItems(data.items);
+        set({ watchlistItems: data.items });
       } else {
         const currentItems = get().watchlistItems;
-        setItems([...currentItems, ...data.items]);
+        set({ watchlistItems: [...currentItems, ...data.items] });
       }
 
       set({
-        currentPage: data.pagination.page,
-        totalPages: data.pagination.totalPages,
-        totalResults: data.pagination.total,
+        watchlistCurrentPage: data.pagination.page,
+        watchlistTotalPages: data.pagination.totalPages,
+        watchlistTotalResults: data.pagination.total,
       });
     } catch (error) {
       console.error('Error fetching watchlist:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch watchlist');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to fetch watchlist' });
     } finally {
-      setLoading(false);
+      set({ watchlistIsLoading: false });
     }
   },
 
-  addToWatchlist: async (data) => {
-    const { addItem, setError } = get();
+  addToWatchlist: async (data: { movieId: number; priority?: 'low' | 'medium' | 'high'; userId?: number }) => {
+    set({ watchlistError: null });
 
     try {
-      setError(null);
-
       const response = await fetch('/api/watchlist', {
         method: 'POST',
         headers: {
@@ -144,22 +135,25 @@ export const watchlistSlice: StateCreator<
       }
 
       // Add to local state (optimistic update)
-      addItem(result);
+      const currentItems = get().watchlistItems;
+      const newItem: WatchlistItem = {
+        ...result,
+        id: Date.now(), // Temporary ID for optimistic updates
+      };
+      set({ watchlistItems: [newItem, ...currentItems] });
 
       return result;
     } catch (error) {
       console.error('Error adding to watchlist:', error);
-      setError(error instanceof Error ? error.message : 'Failed to add movie to watchlist');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to add movie to watchlist' });
       throw error;
     }
   },
 
-  updateWatchlist: async (id, updates) => {
-    const { updateItem, setError } = get();
+  updateWatchlist: async (id: number, updates: Partial<WatchlistItem>) => {
+    set({ watchlistError: null });
 
     try {
-      setError(null);
-
       const response = await fetch(`/api/watchlist/${id}`, {
         method: 'PUT',
         headers: {
@@ -175,22 +169,25 @@ export const watchlistSlice: StateCreator<
       }
 
       // Update local state
-      updateItem(id, result);
+      const currentItems = get().watchlistItems;
+      set({
+        watchlistItems: currentItems.map((item: WatchlistItem) =>
+          item.id === id ? { ...item, ...result } : item
+        )
+      });
 
       return result;
     } catch (error) {
       console.error('Error updating watchlist:', error);
-      setError(error instanceof Error ? error.message : 'Failed to update watchlist entry');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to update watchlist entry' });
       throw error;
     }
   },
 
-  updateWatchlistPriority: async (id, priority) => {
-    const { updateItem, setError } = get();
+  updateWatchlistPriority: async (id: number, priority: 'low' | 'medium' | 'high') => {
+    set({ watchlistError: null });
 
     try {
-      setError(null);
-
       const response = await fetch(`/api/watchlist/${id}`, {
         method: 'PUT',
         headers: {
@@ -206,22 +203,25 @@ export const watchlistSlice: StateCreator<
       }
 
       // Update local state
-      updateItem(id, result);
+      const currentItems = get().watchlistItems;
+      set({
+        watchlistItems: currentItems.map((item: WatchlistItem) =>
+          item.id === id ? { ...item, ...result } : item
+        )
+      });
 
       return result;
     } catch (error) {
       console.error('Error updating watchlist priority:', error);
-      setError(error instanceof Error ? error.message : 'Failed to update watchlist priority');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to update watchlist priority' });
       throw error;
     }
   },
 
-  removeFromWatchlist: async (id) => {
-    const { removeItem, setError } = get();
+  removeFromWatchlist: async (id: number) => {
+    set({ watchlistError: null });
 
     try {
-      setError(null);
-
       const response = await fetch(`/api/watchlist/${id}`, {
         method: 'DELETE',
       });
@@ -232,17 +232,51 @@ export const watchlistSlice: StateCreator<
       }
 
       // Remove from local state
-      removeItem(id);
+      const currentItems = get().watchlistItems;
+      set({ watchlistItems: currentItems.filter((item: WatchlistItem) => item.id !== id) });
     } catch (error) {
       console.error('Error removing from watchlist:', error);
-      setError(error instanceof Error ? error.message : 'Failed to remove movie from watchlist');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to remove movie from watchlist' });
       throw error;
     }
   },
 
-  searchWatchlist: async (query, page = 1) => {
-    const { fetchWatchlist } = get();
-    return fetchWatchlist(page, query);
+  searchWatchlist: async (query: string, page = 1) => {
+    set({ watchlistIsLoading: true });
+    set({ watchlistError: null });
+
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        search: query,
+      });
+
+      const response = await fetch(`/api/watchlist?${params}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to search watchlist');
+      }
+
+      if (page === 1) {
+        set({ watchlistItems: data.items });
+      } else {
+        const currentItems = get().watchlistItems;
+        set({ watchlistItems: [...currentItems, ...data.items] });
+      }
+
+      set({
+        watchlistCurrentPage: data.pagination.page,
+        watchlistTotalPages: data.pagination.totalPages,
+        watchlistTotalResults: data.pagination.total,
+      });
+    } catch (error) {
+      console.error('Error searching watchlist:', error);
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to search watchlist' });
+    } finally {
+      set({ watchlistIsLoading: false });
+    }
   },
 
   getWatchlistStats: async () => {
@@ -265,12 +299,10 @@ export const watchlistSlice: StateCreator<
   },
 
   // Bulk operations for drag-and-drop
-  bulkUpdatePriorities: async (updates) => {
-    const { setError, setItems } = get();
+  bulkUpdatePriorities: async (updates: { id: number; priority: 'low' | 'medium' | 'high' }[]) => {
+    set({ watchlistError: null });
 
     try {
-      setError(null);
-
       const response = await fetch('/api/watchlist/bulk-priority', {
         method: 'PUT',
         headers: {
@@ -287,17 +319,17 @@ export const watchlistSlice: StateCreator<
 
       // Update local state with new order
       const currentItems = get().watchlistItems;
-      const updatedItems = currentItems.map(item => {
+      const updatedItems = currentItems.map((item: WatchlistItem) => {
         const update = results.find((u: { id: number }) => u.id === item.id);
         return update || item;
       });
 
-      setItems(updatedItems);
+      set({ watchlistItems: updatedItems });
 
       return results;
     } catch (error) {
       console.error('Error bulk updating priorities:', error);
-      setError(error instanceof Error ? error.message : 'Failed to bulk update priorities');
+      set({ watchlistError: error instanceof Error ? error.message : 'Failed to bulk update priorities' });
       throw error;
     }
   },

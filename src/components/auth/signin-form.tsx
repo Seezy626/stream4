@@ -35,7 +35,7 @@ export function SignInForm() {
         router.push("/")
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)

@@ -46,7 +46,7 @@ const nextConfig: NextConfig = {
   },
 
   // Webpack optimizations
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev }) => {
     // Optimize bundle size
     if (!dev) {
       config.optimization = {

@@ -1,7 +1,7 @@
 import { TMDBConfig, TMDBError, TMDBApiError, TMDBRateLimitError } from '@/types/tmdb';
 
 class TMDBClient {
-  private config: TMDBConfig;
+  protected config: TMDBConfig;
   private requestCount = 0;
   private lastRequestTime = 0;
   private rateLimitRemaining = 40; // TMDB allows 40 requests per 10 seconds
@@ -95,7 +95,6 @@ class TMDBClient {
 
       // Handle rate limiting
       if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '1');
         throw new TMDBRateLimitError('Rate limit exceeded');
       }
 

@@ -1,93 +1,86 @@
-import { StateCreator } from 'zustand';
-import { AppState, WatchHistoryState, WatchHistoryActions, WatchHistoryItem } from '../types';
+import { WatchHistoryState, WatchHistoryActions, WatchHistoryItem, WatchHistoryFilters } from '../types';
 
 export interface WatchHistorySlice extends WatchHistoryState, WatchHistoryActions {}
 
-export const watchHistorySlice: StateCreator<
-  AppState & WatchHistoryActions,
-  [],
-  [],
-  WatchHistorySlice
-> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const watchHistorySlice = (set: any, get: any) => ({
   // Initial watch history state
-  items: [],
-  filters: {},
-  isLoading: false,
-  error: null,
-  currentPage: 1,
-  totalPages: 0,
-  totalResults: 0,
+  watchHistoryItems: [],
+  watchHistoryFilters: {},
+  watchHistoryIsLoading: false,
+  watchHistoryError: null,
+  watchHistoryCurrentPage: 1,
+  watchHistoryTotalPages: 0,
+  watchHistoryTotalResults: 0,
 
   // Watch history actions
-  setItems: (items) => {
+  setWatchHistoryItems: (items: WatchHistoryItem[]) => {
     set({
-      items,
-      error: null,
+      watchHistoryItems: items,
+      watchHistoryError: null,
     });
   },
 
-  addItem: (item) => {
-    const currentItems = get().items;
+  addWatchHistoryItem: (item: Omit<WatchHistoryItem, 'id'>) => {
+    const currentItems = get().watchHistoryItems;
     const newItem: WatchHistoryItem = {
       ...item,
       id: Date.now(), // Temporary ID for optimistic updates
     };
 
     set({
-      items: [newItem, ...currentItems],
-      error: null,
+      watchHistoryItems: [newItem, ...currentItems],
+      watchHistoryError: null,
     });
   },
 
-  updateItem: (id, updates) => {
-    const currentItems = get().items;
+  updateWatchHistoryItem: (id: number, updates: Partial<WatchHistoryItem>) => {
+    const currentItems = get().watchHistoryItems;
     set({
-      items: currentItems.map((item) =>
+      watchHistoryItems: currentItems.map((item: WatchHistoryItem) =>
         item.id === id ? { ...item, ...updates } : item
       ),
-      error: null,
+      watchHistoryError: null,
     });
   },
 
-  removeItem: (id) => {
-    const currentItems = get().items;
+  removeWatchHistoryItem: (id: number) => {
+    const currentItems = get().watchHistoryItems;
     set({
-      items: currentItems.filter((item) => item.id !== id),
-      error: null,
+      watchHistoryItems: currentItems.filter((item: WatchHistoryItem) => item.id !== id),
+      watchHistoryError: null,
     });
   },
 
-  setFilters: (filters) => {
-    const currentFilters = get().filters;
+  setWatchHistoryFilters: (filters: Partial<WatchHistoryFilters>) => {
+    const currentFilters = get().watchHistoryFilters;
     set({
-      filters: {
+      watchHistoryFilters: {
         ...currentFilters,
         ...filters,
       },
-      currentPage: 1, // Reset to first page when filters change
+      watchHistoryCurrentPage: 1, // Reset to first page when filters change
     });
   },
 
-  setLoading: (isLoading) => {
-    set({ isLoading });
+  setWatchHistoryLoading: (isLoading: boolean) => {
+    set({ watchHistoryIsLoading: isLoading });
   },
 
-  setError: (error) => {
-    set({ error, isLoading: false });
+  setWatchHistoryError: (error: string | null) => {
+    set({ watchHistoryError: error, watchHistoryIsLoading: false });
   },
 
-  setPage: (page) => {
-    set({ currentPage: page });
+  setWatchHistoryPage: (page: number) => {
+    set({ watchHistoryCurrentPage: page });
   },
 
   // API integration actions
-  fetchWatchHistory: async (page = 1, search = '', filters = {}) => {
-    const { setLoading, setError, setItems } = get();
+  fetchWatchHistory: async (page = 1, search = '', filters: Partial<WatchHistoryFilters> = {}) => {
+    set({ watchHistoryIsLoading: true });
+    set({ watchHistoryError: null });
 
     try {
-      setLoading(true);
-      setError(null);
-
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20',
@@ -105,31 +98,29 @@ export const watchHistorySlice: StateCreator<
       }
 
       if (page === 1) {
-        setItems(data.items);
+        set({ watchHistoryItems: data.items });
       } else {
-        const currentItems = get().items;
-        setItems([...currentItems, ...data.items]);
+        const currentItems = get().watchHistoryItems;
+        set({ watchHistoryItems: [...currentItems, ...data.items] });
       }
 
       set({
-        currentPage: data.pagination.page,
-        totalPages: data.pagination.totalPages,
-        totalResults: data.pagination.total,
+        watchHistoryCurrentPage: data.pagination.page,
+        watchHistoryTotalPages: data.pagination.totalPages,
+        watchHistoryTotalResults: data.pagination.total,
       });
     } catch (error) {
       console.error('Error fetching watch history:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch watch history');
+      set({ watchHistoryError: error instanceof Error ? error.message : 'Failed to fetch watch history' });
     } finally {
-      setLoading(false);
+      set({ watchHistoryIsLoading: false });
     }
   },
 
-  addToWatchHistory: async (data) => {
-    const { addItem, setError } = get();
+  addToWatchHistory: async (data: { movieId: number; watchedAt: Date; rating?: number; notes?: string; }) => {
+    set({ watchHistoryError: null });
 
     try {
-      setError(null);
-
       const response = await fetch('/api/watch-history', {
         method: 'POST',
         headers: {
@@ -145,22 +136,25 @@ export const watchHistorySlice: StateCreator<
       }
 
       // Add to local state (optimistic update)
-      addItem(result);
+      const currentItems = get().watchHistoryItems;
+      const newItem: WatchHistoryItem = {
+        ...result,
+        id: Date.now(), // Temporary ID for optimistic updates
+      };
+      set({ watchHistoryItems: [newItem, ...currentItems] });
 
       return result;
     } catch (error) {
       console.error('Error adding to watch history:', error);
-      setError(error instanceof Error ? error.message : 'Failed to add movie to watch history');
+      set({ watchHistoryError: error instanceof Error ? error.message : 'Failed to add movie to watch history' });
       throw error;
     }
   },
 
-  updateWatchHistory: async (id, updates) => {
-    const { updateItem, setError } = get();
+  updateWatchHistory: async (id: number, updates: { watchedAt?: Date; rating?: number; notes?: string; }) => {
+    set({ watchHistoryError: null });
 
     try {
-      setError(null);
-
       const response = await fetch(`/api/watch-history/${id}`, {
         method: 'PUT',
         headers: {
@@ -176,22 +170,25 @@ export const watchHistorySlice: StateCreator<
       }
 
       // Update local state
-      updateItem(id, result);
+      const currentItems = get().watchHistoryItems;
+      set({
+        watchHistoryItems: currentItems.map((item: WatchHistoryItem) =>
+          item.id === id ? { ...item, ...result } : item
+        )
+      });
 
       return result;
     } catch (error) {
       console.error('Error updating watch history:', error);
-      setError(error instanceof Error ? error.message : 'Failed to update watch history entry');
+      set({ watchHistoryError: error instanceof Error ? error.message : 'Failed to update watch history entry' });
       throw error;
     }
   },
 
-  deleteWatchHistory: async (id) => {
-    const { removeItem, setError } = get();
+  deleteWatchHistory: async (id: number) => {
+    set({ watchHistoryError: null });
 
     try {
-      setError(null);
-
       const response = await fetch(`/api/watch-history/${id}`, {
         method: 'DELETE',
       });
@@ -202,17 +199,51 @@ export const watchHistorySlice: StateCreator<
       }
 
       // Remove from local state
-      removeItem(id);
+      const currentItems = get().watchHistoryItems;
+      set({ watchHistoryItems: currentItems.filter((item: WatchHistoryItem) => item.id !== id) });
     } catch (error) {
       console.error('Error deleting watch history:', error);
-      setError(error instanceof Error ? error.message : 'Failed to delete watch history entry');
+      set({ watchHistoryError: error instanceof Error ? error.message : 'Failed to delete watch history entry' });
       throw error;
     }
   },
 
-  searchWatchHistory: async (query, page = 1) => {
-    const { fetchWatchHistory } = get();
-    return fetchWatchHistory(page, query);
+  searchWatchHistory: async (query: string, page = 1) => {
+    set({ watchHistoryIsLoading: true });
+    set({ watchHistoryError: null });
+
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        search: query,
+      });
+
+      const response = await fetch(`/api/watch-history?${params}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to search watch history');
+      }
+
+      if (page === 1) {
+        set({ watchHistoryItems: data.items });
+      } else {
+        const currentItems = get().watchHistoryItems;
+        set({ watchHistoryItems: [...currentItems, ...data.items] });
+      }
+
+      set({
+        watchHistoryCurrentPage: data.pagination.page,
+        watchHistoryTotalPages: data.pagination.totalPages,
+        watchHistoryTotalResults: data.pagination.total,
+      });
+    } catch (error) {
+      console.error('Error searching watch history:', error);
+      set({ watchHistoryError: error instanceof Error ? error.message : 'Failed to search watch history' });
+    } finally {
+      set({ watchHistoryIsLoading: false });
+    }
   },
 
   getWatchHistoryStats: async () => {

@@ -1,70 +1,65 @@
-import { StateCreator } from 'zustand';
-import { AppState, MovieState, MovieActions } from '../types';
+import { MovieState, MovieActions, MovieFilters } from '../types';
 
 export interface MovieSlice extends MovieState, MovieActions {}
 
-export const movieSlice: StateCreator<
-  AppState & MovieActions,
-  [],
-  [],
-  MovieSlice
-> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const movieSlice = (set: any, get: any) => ({
   // Initial movie state
   searchResults: [],
   selectedMovie: null,
-  filters: {},
-  isLoading: false,
-  error: null,
-  currentPage: 1,
-  totalPages: 0,
-  totalResults: 0,
+  movieFilters: {},
+  movieIsLoading: false,
+  movieError: null,
+  movieCurrentPage: 1,
+  movieTotalPages: 0,
+  movieTotalResults: 0,
 
   // Movie actions
-  setSearchResults: (results, totalPages, totalResults) => {
+  setSearchResults: (results: unknown[], totalPages: number, totalResults: number) => {
     set({
       searchResults: results,
-      totalPages,
-      totalResults,
-      error: null,
+      movieTotalPages: totalPages,
+      movieTotalResults: totalResults,
+      movieError: null,
     });
   },
 
-  setSelectedMovie: (movie) => {
+  setSelectedMovie: (movie: unknown | null) => {
     set({ selectedMovie: movie });
   },
 
-  setFilters: (filters) => {
-    const currentFilters = get().filters;
+  setMovieFilters: (filters: Partial<MovieFilters>) => {
+    const currentFilters = get().movieFilters;
     set({
-      filters: {
+      movieFilters: {
         ...currentFilters,
         ...filters,
       },
-      currentPage: 1, // Reset to first page when filters change
+      movieCurrentPage: 1, // Reset to first page when filters change
     });
   },
 
-  setLoading: (isLoading) => {
-    set({ isLoading });
+  setMovieLoading: (isLoading: boolean) => {
+    set({ movieIsLoading: isLoading });
   },
 
-  setError: (error) => {
-    set({ error, isLoading: false });
+  setMovieError: (error: string | null) => {
+    set({ movieError: error, movieIsLoading: false });
   },
 
-  setPage: (page) => {
-    set({ currentPage: page });
+  setMoviePage: (page: number) => {
+    set({ movieCurrentPage: page });
   },
 
   clearSearch: () => {
     set({
       searchResults: [],
       selectedMovie: null,
-      filters: {},
-      currentPage: 1,
-      totalPages: 0,
-      totalResults: 0,
-      error: null,
+      movieFilters: {},
+      movieCurrentPage: 1,
+      movieTotalPages: 0,
+      movieTotalResults: 0,
+      movieError: null,
     });
   },
 });

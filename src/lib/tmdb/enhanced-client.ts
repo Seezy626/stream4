@@ -1,4 +1,4 @@
-import { TMDBClient, TMDBApiError, TMDBRateLimitError } from './client';
+import { TMDBClient, TMDBApiError } from './client';
 import { TMDBCache } from './cache';
 import { TMDBErrorHandler, TMDBRetry, TMDBValidator } from './errors';
 import { TMDBCacheOptions } from '@/types/tmdb';

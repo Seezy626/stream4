@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, gte, lte, like, sql } from 'drizzle-orm';
 import { db } from '../db';
-import { watchHistory, movies, users } from '../schema';
+import { watchHistory, movies } from '../schema';
 import { WatchHistoryItem, WatchHistoryFilters } from '../../state/types';
 
 export interface CreateWatchHistoryData {

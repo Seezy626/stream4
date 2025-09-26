@@ -7,67 +7,19 @@ import { watchHistorySlice } from './slices/watch-history-slice';
 import { watchlistSlice } from './slices/watchlist-slice';
 import { uiSlice } from './slices/ui-slice';
 
-// Initial state
-const initialState: AppState = {
-  // Auth state
-  user: null,
-  session: null,
-  isAuthenticated: false,
-  isLoading: false,
-  preferences: {
-    theme: 'system',
-    language: 'en',
-    autoplay: false,
-    notifications: true,
-  },
-
-  // Movie state
-  searchResults: [],
-  selectedMovie: null,
-  filters: {},
-  currentPage: 1,
-  totalPages: 0,
-  totalResults: 0,
-  error: null,
-
-  // Watch history state
-  items: [],
-  watchHistoryFilters: {},
-  watchHistoryCurrentPage: 1,
-  watchHistoryTotalPages: 0,
-  watchHistoryTotalResults: 0,
-
-  // Watchlist state
-  watchlistItems: [],
-  watchlistFilters: {},
-  watchlistCurrentPage: 1,
-  watchlistTotalPages: 0,
-  watchlistTotalResults: 0,
-
-  // UI state
-  loading: false,
-  loadingMessage: null,
-  modals: {},
-  notifications: [],
-  search: {
-    query: '',
-    isActive: false,
-    results: [],
-  },
-  theme: 'system',
-};
 
 // Create the main store with all slices
 export const useAppStore = create<AppStore>()(
   persist(
-    (...a) => ({
-      ...initialState,
-      ...authSlice(...a),
-      ...movieSlice(...a),
-      ...watchHistorySlice(...a),
-      ...watchlistSlice(...a),
-      ...uiSlice(...a),
-    }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ((set: any, get: any) => ({
+      ...authSlice(set, get),
+      ...movieSlice(set, get),
+      ...watchHistorySlice(set, get),
+      ...watchlistSlice(set, get),
+      ...uiSlice(set, get),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    })) as any,
     {
       name: 'movie-app-store',
       storage: createJSONStorage(() => localStorage),
@@ -80,13 +32,14 @@ export const useAppStore = create<AppStore>()(
         // Don't persist loading states, errors, or temporary data
       }),
       // Custom merge function for hydration
-      merge: (persistedState: Partial<AppState>, currentState: AppState) => {
+      merge: (persistedState: unknown, currentState: unknown) => {
+        const persisted = persistedState as Partial<AppState>;
+        const current = currentState as AppState;
         return {
-          ...currentState,
-          ...persistedState,
+          ...current,
+          ...persisted,
           // Reset loading states on hydration
           isLoading: false,
-          loading: false,
           loadingMessage: null,
           error: null,
           // Reset modal states
@@ -100,7 +53,8 @@ export const useAppStore = create<AppStore>()(
         };
       },
     }
-  )
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ) as any
 );
 
 // Export the store for debugging and testing

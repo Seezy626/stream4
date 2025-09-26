@@ -1,16 +1,11 @@
-import { StateCreator } from 'zustand';
-import { AppState, UIState, UIActions, Notification } from '../types';
+import { UIState, UIActions, Notification } from '../types';
 
 export interface UISlice extends UIState, UIActions {}
 
-export const uiSlice: StateCreator<
-  AppState & UIActions,
-  [],
-  [],
-  UISlice
-> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const uiSlice = (set: any, get: any) => ({
   // Initial UI state
-  isLoading: false,
+  uiIsLoading: false,
   loadingMessage: null,
   modals: {},
   notifications: [],
@@ -22,14 +17,14 @@ export const uiSlice: StateCreator<
   theme: 'system',
 
   // UI actions
-  setLoading: (isLoading, message = null) => {
+  setUILoading: (isLoading: boolean, message?: string) => {
     set({
-      isLoading,
+      uiIsLoading: isLoading,
       loadingMessage: message,
     });
   },
 
-  openModal: (modalId, data = null) => {
+  openModal: (modalId: string, data?: unknown) => {
     const currentModals = get().modals;
     set({
       modals: {
@@ -42,7 +37,7 @@ export const uiSlice: StateCreator<
     });
   },
 
-  closeModal: (modalId) => {
+  closeModal: (modalId: string) => {
     const currentModals = get().modals;
     set({
       modals: {
@@ -59,7 +54,7 @@ export const uiSlice: StateCreator<
     set({ modals: {} });
   },
 
-  addNotification: (notification) => {
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => {
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
@@ -75,17 +70,17 @@ export const uiSlice: StateCreator<
     if (notification.duration) {
       setTimeout(() => {
         const updatedNotifications = get().notifications.filter(
-          (n) => n.id !== newNotification.id
+          (n: Notification) => n.id !== newNotification.id
         );
         set({ notifications: updatedNotifications });
       }, notification.duration);
     }
   },
 
-  removeNotification: (id) => {
+  removeNotification: (id: string) => {
     const currentNotifications = get().notifications;
     set({
-      notifications: currentNotifications.filter((n) => n.id !== id),
+      notifications: currentNotifications.filter((n: Notification) => n.id !== id),
     });
   },
 
@@ -93,7 +88,7 @@ export const uiSlice: StateCreator<
     set({ notifications: [] });
   },
 
-  setSearchQuery: (query) => {
+  setSearchQuery: (query: string) => {
     const currentSearch = get().search;
     set({
       search: {
@@ -103,7 +98,7 @@ export const uiSlice: StateCreator<
     });
   },
 
-  setSearchActive: (isActive) => {
+  setSearchActive: (isActive: boolean) => {
     const currentSearch = get().search;
     set({
       search: {
@@ -113,7 +108,7 @@ export const uiSlice: StateCreator<
     });
   },
 
-  setSearchResults: (results) => {
+  setUISearchResults: (results: unknown[]) => {
     const currentSearch = get().search;
     set({
       search: {
@@ -123,7 +118,7 @@ export const uiSlice: StateCreator<
     });
   },
 
-  setTheme: (theme) => {
+  setTheme: (theme: UIState['theme']) => {
     set({ theme });
   },
 });

@@ -28,8 +28,8 @@ export default function WatchlistPage() {
 
   const {
     watchlistItems: items,
-    isLoading,
-    totalResults,
+    watchlistIsLoading: isLoading,
+    watchlistTotalResults: totalResults,
     fetchWatchlist,
     addToWatchlist,
     removeFromWatchlist,
@@ -58,7 +58,7 @@ export default function WatchlistPage() {
     try {
       await addToWatchlist(data)
       toast.success("Movie added to watchlist!")
-    } catch (_error) {
+    } catch {
       toast.error("Failed to add movie to watchlist")
     }
   }
@@ -68,17 +68,17 @@ export default function WatchlistPage() {
     try {
       await removeFromWatchlist(id)
       toast.success("Movie removed from watchlist")
-    } catch (_error) {
+    } catch {
       toast.error("Failed to remove movie from watchlist")
     }
   }
 
   // Handle mark as watched
-  const handleMarkAsWatched = async (_id: number) => {
+  const handleMarkAsWatched = async () => {
     try {
       // TODO: Implement mark as watched functionality
       toast.success("Movie marked as watched!")
-    } catch (_error) {
+    } catch {
       toast.error("Failed to mark movie as watched")
     }
   }
@@ -88,7 +88,7 @@ export default function WatchlistPage() {
     try {
       await updateWatchlistPriority(id, priority)
       toast.success("Priority updated!")
-    } catch (_error) {
+    } catch {
       toast.error("Failed to update priority")
     }
   }
@@ -129,10 +129,10 @@ export default function WatchlistPage() {
         const reader = new FileReader()
         reader.onload = (e) => {
           try {
-            const _importedItems = JSON.parse(e.target?.result as string)
+            JSON.parse(e.target?.result as string)
             // TODO: Implement import functionality
             toast.success("Watchlist imported successfully!")
-          } catch (_error) {
+          } catch {
             toast.error("Failed to import watchlist")
           }
         }
@@ -206,7 +206,6 @@ export default function WatchlistPage() {
                 onEdit={handleEditPriority}
                 onDelete={handleRemoveFromWatchlist}
                 onMarkAsWatched={handleMarkAsWatched}
-                onUpdatePriority={handleUpdatePriority}
                 onReorder={async (orderedIds) => {
                   try {
                     const response = await fetch('/api/watchlist/reorder', {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppStore } from './store';
 import { TMDBMovie, TMDBTVShow } from '../types/tmdb';
+import { WatchlistItem } from './types';
 
 // Auth Hooks
 export const useAuth = () => {
@@ -46,36 +47,36 @@ export const useMovies = () => {
   const {
     searchResults,
     selectedMovie,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
+    movieFilters,
+    movieIsLoading,
+    movieError,
+    movieCurrentPage,
+    movieTotalPages,
+    movieTotalResults,
     setSearchResults,
     setSelectedMovie,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    setMovieFilters,
+    setMovieLoading,
+    setMovieError,
+    setMoviePage,
     clearSearch,
   } = useAppStore();
 
   return {
     searchResults,
     selectedMovie,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
+    filters: movieFilters,
+    isLoading: movieIsLoading,
+    error: movieError,
+    currentPage: movieCurrentPage,
+    totalPages: movieTotalPages,
+    totalResults: movieTotalResults,
     setSearchResults,
     setSelectedMovie,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    setFilters: setMovieFilters,
+    setLoading: setMovieLoading,
+    setError: setMovieError,
+    setPage: setMoviePage,
     clearSearch,
   };
 };
@@ -106,39 +107,39 @@ export const useSelectedMovie = () => {
 // Watch History Hooks
 export const useWatchHistory = () => {
   const {
-    items,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    watchHistoryItems,
+    watchHistoryFilters,
+    watchHistoryIsLoading,
+    watchHistoryError,
+    watchHistoryCurrentPage,
+    watchHistoryTotalPages,
+    watchHistoryTotalResults,
+    setWatchHistoryItems,
+    addWatchHistoryItem,
+    updateWatchHistoryItem,
+    removeWatchHistoryItem,
+    setWatchHistoryFilters,
+    setWatchHistoryLoading,
+    setWatchHistoryError,
+    setWatchHistoryPage,
   } = useAppStore();
 
   return {
-    items,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    items: watchHistoryItems,
+    filters: watchHistoryFilters,
+    isLoading: watchHistoryIsLoading,
+    error: watchHistoryError,
+    currentPage: watchHistoryCurrentPage,
+    totalPages: watchHistoryTotalPages,
+    totalResults: watchHistoryTotalResults,
+    setItems: setWatchHistoryItems,
+    addItem: addWatchHistoryItem,
+    updateItem: updateWatchHistoryItem,
+    removeItem: removeWatchHistoryItem,
+    setFilters: setWatchHistoryFilters,
+    setLoading: setWatchHistoryLoading,
+    setError: setWatchHistoryError,
+    setPage: setWatchHistoryPage,
   };
 };
 
@@ -146,18 +147,21 @@ export const useWatchHistoryActions = () => {
   const { addItem, updateItem, removeItem } = useWatchHistory();
 
   const addToHistory = (movie: TMDBMovie | TMDBTVShow, rating?: number, notes?: string) => {
+    const now = new Date();
     addItem({
-      userId: 1, // This should come from auth context
+      userId: '1', // This should come from auth context
       movieId: movie.id,
-      watchedAt: new Date(),
+      watchedAt: now,
       rating,
       notes,
+      createdAt: now,
+      updatedAt: now,
       movie: {
         id: movie.id,
         tmdbId: movie.id,
         title: 'title' in movie ? movie.title : movie.name,
-        posterPath: movie.poster_path,
-        releaseDate: 'release_date' in movie ? movie.release_date : movie.first_air_date,
+        posterPath: movie.poster_path || undefined,
+        releaseDate: ('release_date' in movie ? movie.release_date : movie.first_air_date) || undefined,
         mediaType: movie.media_type,
       },
     });
@@ -181,39 +185,39 @@ export const useWatchHistoryActions = () => {
 // Watchlist Hooks
 export const useWatchlist = () => {
   const {
-    items,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    watchlistItems,
+    watchlistFilters,
+    watchlistIsLoading,
+    watchlistError,
+    watchlistCurrentPage,
+    watchlistTotalPages,
+    watchlistTotalResults,
+    setWatchlistItems,
+    addWatchlistItem,
+    updateWatchlistItem,
+    removeWatchlistItem,
+    setWatchlistFilters,
+    setWatchlistLoading,
+    setWatchlistError,
+    setWatchlistPage,
   } = useAppStore();
 
   return {
-    items,
-    filters,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    totalResults,
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
-    setFilters,
-    setLoading,
-    setError,
-    setPage,
+    items: watchlistItems,
+    filters: watchlistFilters,
+    isLoading: watchlistIsLoading,
+    error: watchlistError,
+    currentPage: watchlistCurrentPage,
+    totalPages: watchlistTotalPages,
+    totalResults: watchlistTotalResults,
+    setItems: setWatchlistItems,
+    addItem: addWatchlistItem,
+    updateItem: updateWatchlistItem,
+    removeItem: removeWatchlistItem,
+    setFilters: setWatchlistFilters,
+    setLoading: setWatchlistLoading,
+    setError: setWatchlistError,
+    setPage: setWatchlistPage,
   };
 };
 
@@ -222,7 +226,7 @@ export const useWatchlistActions = () => {
 
   const addToWatchlist = (movie: TMDBMovie | TMDBTVShow, priority: 'low' | 'medium' | 'high' = 'medium') => {
     addItem({
-      userId: 1, // This should come from auth context
+      userId: '1', // This should come from auth context
       movieId: movie.id,
       addedAt: new Date(),
       priority,
@@ -230,11 +234,11 @@ export const useWatchlistActions = () => {
         id: movie.id,
         tmdbId: movie.id,
         title: 'title' in movie ? movie.title : movie.name,
-        posterPath: movie.poster_path,
-        releaseDate: 'release_date' in movie ? movie.release_date : movie.first_air_date,
+        posterPath: movie.poster_path || undefined,
+        releaseDate: ('release_date' in movie ? movie.release_date : movie.first_air_date) || undefined,
         mediaType: movie.media_type,
       },
-    });
+    } as Omit<WatchlistItem, 'id'>);
   };
 
   const updateWatchlistItem = (id: number, priority: 'low' | 'medium' | 'high') => {
@@ -255,13 +259,13 @@ export const useWatchlistActions = () => {
 // UI Hooks
 export const useUI = () => {
   const {
-    isLoading,
+    uiIsLoading,
     loadingMessage,
     modals,
     notifications,
     search,
     theme,
-    setLoading,
+    setUILoading,
     openModal,
     closeModal,
     closeAllModals,
@@ -270,18 +274,18 @@ export const useUI = () => {
     clearNotifications,
     setSearchQuery,
     setSearchActive,
-    setSearchResults,
+    setUISearchResults,
     setTheme,
   } = useAppStore();
 
   return {
-    isLoading,
+    isLoading: uiIsLoading,
     loadingMessage,
     modals,
     notifications,
     search,
     theme,
-    setLoading,
+    setLoading: setUILoading,
     openModal,
     closeModal,
     closeAllModals,
@@ -290,7 +294,7 @@ export const useUI = () => {
     clearNotifications,
     setSearchQuery,
     setSearchActive,
-    setSearchResults,
+    setSearchResults: setUISearchResults,
     setTheme,
   };
 };
@@ -396,28 +400,28 @@ export const useAuthSelector = () => {
 
 export const useMovieSelector = () => {
   return useMemo(() => {
-    const { searchResults, selectedMovie, filters, currentPage, totalResults } = useAppStore.getState();
-    return { searchResults, selectedMovie, filters, currentPage, totalResults };
+    const { searchResults, selectedMovie, movieFilters, movieCurrentPage, movieTotalResults } = useAppStore.getState();
+    return { searchResults, selectedMovie, filters: movieFilters, currentPage: movieCurrentPage, totalResults: movieTotalResults };
   }, []);
 };
 
 export const useWatchHistorySelector = () => {
   return useMemo(() => {
-    const { items, filters, currentPage, totalResults } = useAppStore.getState();
-    return { items, filters, currentPage, totalResults };
+    const { watchHistoryItems, watchHistoryFilters, watchHistoryCurrentPage, watchHistoryTotalResults } = useAppStore.getState();
+    return { items: watchHistoryItems, filters: watchHistoryFilters, currentPage: watchHistoryCurrentPage, totalResults: watchHistoryTotalResults };
   }, []);
 };
 
 export const useWatchlistSelector = () => {
   return useMemo(() => {
-    const { items, filters, currentPage, totalResults } = useAppStore.getState();
-    return { items, filters, currentPage, totalResults };
+    const { watchlistItems, watchlistFilters, watchlistCurrentPage, watchlistTotalResults } = useAppStore.getState();
+    return { items: watchlistItems, filters: watchlistFilters, currentPage: watchlistCurrentPage, totalResults: watchlistTotalResults };
   }, []);
 };
 
 export const useUISelector = () => {
   return useMemo(() => {
-    const { isLoading, modals, notifications, theme } = useAppStore.getState();
-    return { isLoading, modals, notifications, theme };
+    const { uiIsLoading, modals, notifications, theme } = useAppStore.getState();
+    return { isLoading: uiIsLoading, modals, notifications, theme };
   }, []);
 };

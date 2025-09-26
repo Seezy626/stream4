@@ -12,7 +12,7 @@ import { EditWatchedDialog } from '@/components/watched/edit-watched-dialog';
 import { Button } from '@/components/ui/button';
 import { Search, Plus, BarChart3 } from 'lucide-react';
 import { WatchHistoryItem } from '@/state/types';
-import { CreateWatchHistoryData, UpdateWatchHistoryData } from '@/lib/db/watch-history';
+import type { UpdateWatchHistoryData } from '@/lib/db/watch-history';
 import { toast } from 'sonner';
 
 interface WatchHistoryResponse {

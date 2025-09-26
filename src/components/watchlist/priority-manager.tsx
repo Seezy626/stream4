@@ -55,62 +55,10 @@ export function PriorityManager({ items, onBulkUpdate, isLoading = false }: Prio
 
       await onBulkUpdate(updates);
       toast.success(`Updated ${items.length} items to ${selectedPriority} priority`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update priorities');
     } finally {
       setIsUpdating(false);
-    }
-  };
-
-  const handleMoveUp = async (item: WatchlistItem) => {
-    const currentPriority = item.priority;
-    let newPriority: 'low' | 'medium' | 'high' = 'medium';
-
-    switch (currentPriority) {
-      case 'low':
-        newPriority = 'medium';
-        break;
-      case 'medium':
-        newPriority = 'high';
-        break;
-      case 'high':
-        newPriority = 'high'; // Already at highest
-        break;
-    }
-
-    if (newPriority !== currentPriority) {
-      try {
-        await onBulkUpdate([{ id: item.id, priority: newPriority }]);
-        toast.success(`Moved "${item.movie.title}" to ${newPriority} priority`);
-      } catch (error) {
-        toast.error('Failed to update priority');
-      }
-    }
-  };
-
-  const handleMoveDown = async (item: WatchlistItem) => {
-    const currentPriority = item.priority;
-    let newPriority: 'low' | 'medium' | 'high' = 'medium';
-
-    switch (currentPriority) {
-      case 'high':
-        newPriority = 'medium';
-        break;
-      case 'medium':
-        newPriority = 'low';
-        break;
-      case 'low':
-        newPriority = 'low'; // Already at lowest
-        break;
-    }
-
-    if (newPriority !== currentPriority) {
-      try {
-        await onBulkUpdate([{ id: item.id, priority: newPriority }]);
-        toast.success(`Moved "${item.movie.title}" to ${newPriority} priority`);
-      } catch (error) {
-        toast.error('Failed to update priority');
-      }
     }
   };
 
@@ -124,19 +72,6 @@ export function PriorityManager({ items, onBulkUpdate, isLoading = false }: Prio
         return 'bg-green-500';
       default:
         return 'bg-gray-500';
-    }
-  };
-
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return '🔥';
-      case 'medium':
-        return '⚡';
-      case 'low':
-        return '🐌';
-      default:
-        return '📋';
     }
   };
 

@@ -5,7 +5,6 @@ import {
   TMDBMovie,
   TMDBTVShow,
   TMDBPerson,
-  TMDBSearchType,
 } from '@/types/tmdb';
 
 export class TMDBSearch {

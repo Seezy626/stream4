@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get watchlist statistics
-export async function PATCH(_request: NextRequest) {
+export async function PATCH() {
   try {
     const session = await getServerSession(authOptions);
 

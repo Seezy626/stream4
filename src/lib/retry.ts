@@ -232,7 +232,11 @@ class RetryManager {
     failures: number;
     lastFailureTime: number;
   }> {
-    const stats: Record<string, unknown> = {};
+    const stats: Record<string, {
+      state: CircuitBreakerState;
+      failures: number;
+      lastFailureTime: number;
+    }> = {};
     for (const [key, breaker] of this.circuitBreakers) {
       stats[key] = {
         state: breaker.getState(),

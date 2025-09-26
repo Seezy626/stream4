@@ -94,9 +94,6 @@ export function EditWatchedDialog({
     onClose();
   };
 
-  const _watchedAt = form.watch('watchedAt');
-  const _rating = form.watch('rating');
-
   if (!item) return null;
 
   return (

@@ -7,7 +7,6 @@ import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { db } from './db';
 import { users, accounts, sessions, verificationTokens } from './schema';
-import { UpstashRedisStore } from './upstash-redis-store';
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db, {
@@ -68,7 +67,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
@@ -80,7 +79,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === 'google') {
         // Check if user exists, if not create them
         const existingUser = await db
@@ -103,7 +102,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    async signOut({ session, token }) {
+    async signOut() {
       // Clean up any additional data on sign out
     },
   },

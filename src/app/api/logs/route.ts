@@ -115,7 +115,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       service: 'logging-service',
     });
-  } catch (_error: unknown) {
+  } catch {
     return NextResponse.json(
       { error: 'Logging service unavailable' },
       { status: 503 }

@@ -65,7 +65,7 @@ export async function GET() {
       service: 'monitoring-service',
       health,
     });
-  } catch (_error: unknown) {
+  } catch {
     return NextResponse.json(
       { error: 'Monitoring service unavailable' },
       { status: 503 }

@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get watch history statistics
-export async function PATCH(_request: NextRequest) {
+export async function PATCH() {
   try {
     const session = await getServerSession(authOptions);
 

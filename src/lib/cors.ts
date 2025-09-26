@@ -63,7 +63,6 @@ class CorsHandler {
   handlePreflight(request: NextRequest): NextResponse {
     const origin = request.headers.get('origin') || '';
     const requestMethod = request.headers.get('access-control-request-method') || '';
-    const _requestHeaders = request.headers.get('access-control-request-headers') || '';
 
     // Check if origin is allowed
     if (!this.isOriginAllowed(origin)) {

@@ -1,14 +1,9 @@
-import { StateCreator } from 'zustand';
-import { AppState, AuthState, AuthActions } from '../types';
+import { AuthState, AuthActions, User, UserPreferences } from '../types';
 
 export interface AuthSlice extends AuthState, AuthActions {}
 
-export const authSlice: StateCreator<
-  AppState & AuthActions,
-  [],
-  [],
-  AuthSlice
-> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const authSlice = (set: any, get: any) => ({
   // Initial auth state
   user: null,
   session: null,
@@ -22,7 +17,7 @@ export const authSlice: StateCreator<
   },
 
   // Auth actions
-  setUser: (user) => {
+  setUser: (user: User | null) => {
     set({
       user,
       isAuthenticated: !!user,
@@ -30,15 +25,15 @@ export const authSlice: StateCreator<
     });
   },
 
-  setSession: (session) => {
+  setSession: (session: AuthState['session']) => {
     set({ session });
   },
 
-  setLoading: (isLoading) => {
+  setLoading: (isLoading: boolean) => {
     set({ isLoading });
   },
 
-  updatePreferences: (preferences) => {
+  updatePreferences: (preferences: Partial<UserPreferences>) => {
     const currentPrefs = get().preferences;
     set({
       preferences: {
@@ -54,33 +49,6 @@ export const authSlice: StateCreator<
       session: null,
       isAuthenticated: false,
       isLoading: false,
-      // Reset other states on logout
-      searchResults: [],
-      selectedMovie: null,
-      filters: {},
-      currentPage: 1,
-      totalPages: 0,
-      totalResults: 0,
-      error: null,
-      items: [],
-      watchHistoryFilters: {},
-      watchHistoryCurrentPage: 1,
-      watchHistoryTotalPages: 0,
-      watchHistoryTotalResults: 0,
-      watchlistItems: [],
-      watchlistFilters: {},
-      watchlistCurrentPage: 1,
-      watchlistTotalPages: 0,
-      watchlistTotalResults: 0,
-      loading: false,
-      loadingMessage: null,
-      modals: {},
-      notifications: [],
-      search: {
-        query: '',
-        isActive: false,
-        results: [],
-      },
     });
   },
 });

@@ -38,12 +38,12 @@ export interface MovieFilters {
 export interface MovieState {
   searchResults: unknown[];
   selectedMovie: unknown | null;
-  filters: MovieFilters;
-  isLoading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalResults: number;
+  movieFilters: MovieFilters;
+  movieIsLoading: boolean;
+  movieError: string | null;
+  movieCurrentPage: number;
+  movieTotalPages: number;
+  movieTotalResults: number;
 }
 
 export interface WatchHistoryItem {
@@ -73,13 +73,13 @@ export interface WatchHistoryFilters {
 }
 
 export interface WatchHistoryState {
-  items: WatchHistoryItem[];
-  filters: WatchHistoryFilters;
-  isLoading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalResults: number;
+  watchHistoryItems: WatchHistoryItem[];
+  watchHistoryFilters: WatchHistoryFilters;
+  watchHistoryIsLoading: boolean;
+  watchHistoryError: string | null;
+  watchHistoryCurrentPage: number;
+  watchHistoryTotalPages: number;
+  watchHistoryTotalResults: number;
 }
 
 export interface WatchlistItem {
@@ -106,16 +106,16 @@ export interface WatchlistFilters {
 
 export interface WatchlistState {
   watchlistItems: WatchlistItem[];
-  filters: WatchlistFilters;
-  isLoading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalResults: number;
+  watchlistFilters: WatchlistFilters;
+  watchlistIsLoading: boolean;
+  watchlistError: string | null;
+  watchlistCurrentPage: number;
+  watchlistTotalPages: number;
+  watchlistTotalResults: number;
 }
 
 export interface UIState {
-  isLoading: boolean;
+  uiIsLoading: boolean;
   loadingMessage: string | null;
   modals: {
     [key: string]: {
@@ -160,22 +160,22 @@ export interface AuthActions {
 export interface MovieActions {
   setSearchResults: (results: unknown[], totalPages: number, totalResults: number) => void;
   setSelectedMovie: (movie: unknown | null) => void;
-  setFilters: (filters: Partial<MovieFilters>) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  setPage: (page: number) => void;
+  setMovieFilters: (filters: Partial<MovieFilters>) => void;
+  setMovieLoading: (loading: boolean) => void;
+  setMovieError: (error: string | null) => void;
+  setMoviePage: (page: number) => void;
   clearSearch: () => void;
 }
 
 export interface WatchHistoryActions {
-  setItems: (items: WatchHistoryItem[]) => void;
-  addItem: (item: Omit<WatchHistoryItem, 'id'>) => void;
-  updateItem: (id: number, updates: Partial<WatchHistoryItem>) => void;
-  removeItem: (id: number) => void;
-  setFilters: (filters: Partial<WatchHistoryFilters>) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  setPage: (page: number) => void;
+  setWatchHistoryItems: (items: WatchHistoryItem[]) => void;
+  addWatchHistoryItem: (item: Omit<WatchHistoryItem, 'id'>) => void;
+  updateWatchHistoryItem: (id: number, updates: Partial<WatchHistoryItem>) => void;
+  removeWatchHistoryItem: (id: number) => void;
+  setWatchHistoryFilters: (filters: Partial<WatchHistoryFilters>) => void;
+  setWatchHistoryLoading: (loading: boolean) => void;
+  setWatchHistoryError: (error: string | null) => void;
+  setWatchHistoryPage: (page: number) => void;
   // API integration actions
   fetchWatchHistory: (page?: number, search?: string, filters?: Partial<WatchHistoryFilters>) => Promise<void>;
   addToWatchHistory: (data: {
@@ -200,14 +200,14 @@ export interface WatchHistoryActions {
 }
 
 export interface WatchlistActions {
-  setItems: (items: WatchlistItem[]) => void;
-  addItem: (item: Omit<WatchlistItem, 'id'>) => void;
-  updateItem: (id: number, updates: Partial<WatchlistItem>) => void;
-  removeItem: (id: number) => void;
-  setFilters: (filters: Partial<WatchlistFilters>) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  setPage: (page: number) => void;
+  setWatchlistItems: (items: WatchlistItem[]) => void;
+  addWatchlistItem: (item: Omit<WatchlistItem, 'id'>) => void;
+  updateWatchlistItem: (id: number, updates: Partial<WatchlistItem>) => void;
+  removeWatchlistItem: (id: number) => void;
+  setWatchlistFilters: (filters: Partial<WatchlistFilters>) => void;
+  setWatchlistLoading: (loading: boolean) => void;
+  setWatchlistError: (error: string | null) => void;
+  setWatchlistPage: (page: number) => void;
   // API integration actions
   fetchWatchlist: (page?: number, search?: string, filters?: Partial<WatchlistFilters>) => Promise<void>;
   addToWatchlist: (data: { movieId: number; priority?: 'low' | 'medium' | 'high'; userId?: number }) => Promise<WatchlistItem>;
@@ -220,7 +220,7 @@ export interface WatchlistActions {
 }
 
 export interface UIActions {
-  setLoading: (loading: boolean, message?: string) => void;
+  setUILoading: (loading: boolean, message?: string) => void;
   openModal: (modalId: string, data?: unknown) => void;
   closeModal: (modalId: string) => void;
   closeAllModals: () => void;
@@ -229,7 +229,7 @@ export interface UIActions {
   clearNotifications: () => void;
   setSearchQuery: (query: string) => void;
   setSearchActive: (active: boolean) => void;
-  setSearchResults: (results: unknown[]) => void;
+  setUISearchResults: (results: unknown[]) => void;
   setTheme: (theme: UIState['theme']) => void;
 }
 

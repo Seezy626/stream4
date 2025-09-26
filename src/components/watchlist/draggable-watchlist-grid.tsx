@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { WatchlistItem } from '@/state/types';
 import { WatchlistCard } from './watchlist-card';
 import { Button } from '@/components/ui/button';
-import { Grid, List, LayoutGrid, GripVertical } from 'lucide-react';
+import { List, LayoutGrid, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DraggableWatchlistGridProps {
@@ -12,7 +12,6 @@ interface DraggableWatchlistGridProps {
   onEdit: (item: WatchlistItem) => void;
   onDelete: (id: number) => void;
   onMarkAsWatched: (id: number) => void;
-  onUpdatePriority: (id: number, priority: 'low' | 'medium' | 'high') => void;
   onReorder: (orderedIds: number[]) => Promise<void>;
   isLoading?: boolean;
   className?: string;
@@ -25,7 +24,6 @@ export function DraggableWatchlistGrid({
   onEdit,
   onDelete,
   onMarkAsWatched,
-  onUpdatePriority,
   onReorder,
   isLoading = false,
   className,
@@ -38,6 +36,7 @@ export function DraggableWatchlistGrid({
   const dragCounter = useRef(0);
 
   const handleDragStart = (e: React.DragEvent, item: WatchlistItem) => {
+    console.log('handleDragStart called with event:', e, 'item:', item);
     if (!isDragEnabled) return;
 
     setDraggedItem(item);
@@ -71,7 +70,7 @@ export function DraggableWatchlistGrid({
     dragCounter.current++;
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = () => {
     dragCounter.current--;
     if (dragCounter.current === 0) {
       setDragOverIndex(null);
@@ -294,7 +293,6 @@ export function DraggableWatchlistGrid({
               onEdit={() => onEdit(item)}
               onDelete={() => onDelete(item.id)}
               onMarkAsWatched={() => onMarkAsWatched(item.id)}
-              onUpdatePriority={(priority) => onUpdatePriority(item.id, priority)}
             />
           </div>
         ))}
