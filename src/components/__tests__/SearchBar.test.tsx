@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SearchBar } from '../SearchBar';
 
+/// <reference types="@testing-library/jest-dom" />
+
 const user = userEvent.setup();
 
 describe('SearchBar', () => {
@@ -139,11 +141,11 @@ describe('SearchBar', () => {
     render(<SearchBar onSearch={mockOnSearch} />);
 
     const input = screen.getByPlaceholderText('Search for movies...');
-    const clearButton = screen.getByLabelText('Clear search');
 
     await user.type(input, 'test query');
     expect(input).toHaveValue('test query');
 
+    const clearButton = screen.getByLabelText('Clear search');
     await user.click(clearButton);
 
     expect(input).toHaveValue('');
@@ -181,7 +183,7 @@ describe('SearchBar', () => {
     expect(searchButton).toBeInTheDocument();
 
     const clearButton = screen.queryByLabelText('Clear search');
-    expect(clearButton).toBeInTheDocument(); // Will be null initially, but exists when there's text
+    expect(clearButton).not.toBeInTheDocument(); // Should not exist initially when there's no text
   });
 
   it('handles rapid typing and clearing', async () => {
@@ -207,11 +209,11 @@ describe('SearchBar', () => {
 
     const input = screen.getByPlaceholderText('Search for movies...');
     const searchButton = screen.getByRole('button', { name: /search/i });
-    const clearButton = screen.getByLabelText('Clear search');
 
     await user.type(input, 'test');
     expect(searchButton).not.toBeDisabled();
 
+    const clearButton = screen.getByLabelText('Clear search');
     await user.click(clearButton);
     expect(searchButton).toBeDisabled();
   });

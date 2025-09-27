@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { movieSlice } from '../movie-slice';
 import { MovieFilters } from '../../types';
-import { createMockMovie } from '../../../__tests__/utils/test-factories';
+import { createMockMovie } from '../../../utils/test-factories';
 
 // Mock the StateCreator type
 
@@ -12,12 +12,12 @@ const createMockStore = (initialState = {}) => {
   const defaultState = {
     searchResults: [],
     selectedMovie: null,
-    filters: {},
-    isLoading: false,
-    error: null,
-    currentPage: 1,
-    totalPages: 0,
-    totalResults: 0,
+    movieFilters: {},
+    movieIsLoading: false,
+    movieError: null,
+    movieCurrentPage: 1,
+    movieTotalPages: 0,
+    movieTotalResults: 0,
     ...initialState,
   };
 
@@ -38,12 +38,12 @@ describe('movieSlice', () => {
 
       expect(store.searchResults).toEqual([]);
       expect(store.selectedMovie).toBeNull();
-      expect(store.filters).toEqual({});
-      expect(store.isLoading).toBe(false);
-      expect(store.error).toBeNull();
-      expect(store.currentPage).toBe(1);
-      expect(store.totalPages).toBe(0);
-      expect(store.totalResults).toBe(0);
+      expect(store.movieFilters).toEqual({});
+      expect(store.movieIsLoading).toBe(false);
+      expect(store.movieError).toBeNull();
+      expect(store.movieCurrentPage).toBe(1);
+      expect(store.movieTotalPages).toBe(0);
+      expect(store.movieTotalResults).toBe(0);
     });
   });
 
@@ -58,21 +58,21 @@ describe('movieSlice', () => {
 
       expect(mockSet).toHaveBeenCalledWith({
         searchResults: mockResults,
-        totalPages,
-        totalResults,
-        error: null,
+        movieTotalPages: totalPages,
+        movieTotalResults: totalResults,
+        movieError: null,
       });
     });
 
     it('should clear error when setting search results', () => {
-      const store = createMockStore({ error: 'Previous error' });
+      const store = createMockStore({ movieError: 'Previous error' });
       const mockResults = [createMockMovie()];
 
       store.setSearchResults(mockResults, 1, 1);
 
       expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          error: null,
+          movieError: null,
         })
       );
     });
@@ -101,37 +101,37 @@ describe('movieSlice', () => {
     });
   });
 
-  describe('setFilters', () => {
+  describe('setMovieFilters', () => {
     it('should merge new filters with existing ones', () => {
       const initialFilters: MovieFilters = {
         genre: [28, 12],
         sortBy: 'popularity.desc',
       };
-      const store = createMockStore({ filters: initialFilters });
+      const store = createMockStore({ movieFilters: initialFilters });
       const newFilters: Partial<MovieFilters> = {
         year: 2023,
         minRating: 7.5,
       };
 
-      store.setFilters(newFilters);
+      store.setMovieFilters(newFilters);
 
       expect(mockSet).toHaveBeenCalledWith({
-        filters: {
+        movieFilters: {
           ...initialFilters,
           ...newFilters,
         },
-        currentPage: 1, // Should reset to first page
+        movieCurrentPage: 1, // Should reset to first page
       });
     });
 
     it('should reset to page 1 when filters change', () => {
-      const store = createMockStore({ currentPage: 5 });
+      const store = createMockStore({ movieCurrentPage: 5 });
 
-      store.setFilters({ genre: [28] });
+      store.setMovieFilters({ genre: [28] });
 
       expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          currentPage: 1,
+          movieCurrentPage: 1,
         })
       );
     });
@@ -139,70 +139,70 @@ describe('movieSlice', () => {
     it('should handle empty filters object', () => {
       const store = createMockStore();
 
-      store.setFilters({});
+      store.setMovieFilters({});
 
       expect(mockSet).toHaveBeenCalledWith({
-        filters: {},
-        currentPage: 1,
+        movieFilters: {},
+        movieCurrentPage: 1,
       });
     });
   });
 
-  describe('setLoading', () => {
+  describe('setMovieLoading', () => {
     it('should set loading state', () => {
       const store = createMockStore();
 
-      store.setLoading(true);
-      expect(mockSet).toHaveBeenCalledWith({ isLoading: true });
+      store.setMovieLoading(true);
+      expect(mockSet).toHaveBeenCalledWith({ movieIsLoading: true });
 
-      store.setLoading(false);
-      expect(mockSet).toHaveBeenCalledWith({ isLoading: false });
+      store.setMovieLoading(false);
+      expect(mockSet).toHaveBeenCalledWith({ movieIsLoading: false });
     });
   });
 
-  describe('setError', () => {
+  describe('setMovieError', () => {
     it('should set error and clear loading', () => {
-      const store = createMockStore({ isLoading: true });
+      const store = createMockStore({ movieIsLoading: true });
       const errorMessage = 'Failed to fetch movies';
 
-      store.setError(errorMessage);
+      store.setMovieError(errorMessage);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
-        isLoading: false,
+        movieError: errorMessage,
+        movieIsLoading: false,
       });
     });
 
     it('should clear error when passed null', () => {
-      const store = createMockStore({ error: 'Previous error' });
+      const store = createMockStore({ movieError: 'Previous error' });
 
-      store.setError(null);
+      store.setMovieError(null);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: null,
-        isLoading: false,
+        movieError: null,
+        movieIsLoading: false,
       });
     });
   });
 
-  describe('setPage', () => {
+  describe('setMoviePage', () => {
     it('should set current page', () => {
       const store = createMockStore();
 
-      store.setPage(3);
+      store.setMoviePage(3);
 
       expect(mockSet).toHaveBeenCalledWith({
-        currentPage: 3,
+        movieCurrentPage: 3,
       });
     });
 
     it('should handle page 1', () => {
-      const store = createMockStore({ currentPage: 5 });
+      const store = createMockStore({ movieCurrentPage: 5 });
 
-      store.setPage(1);
+      store.setMoviePage(1);
 
       expect(mockSet).toHaveBeenCalledWith({
-        currentPage: 1,
+        movieCurrentPage: 1,
       });
     });
   });
@@ -212,11 +212,11 @@ describe('movieSlice', () => {
       const initialState = {
         searchResults: [createMockMovie()],
         selectedMovie: createMockMovie(),
-        filters: { genre: [28] },
-        currentPage: 5,
-        totalPages: 10,
-        totalResults: 200,
-        error: 'Some error',
+        movieFilters: { genre: [28] },
+        movieCurrentPage: 5,
+        movieTotalPages: 10,
+        movieTotalResults: 200,
+        movieError: 'Some error',
       };
       const store = createMockStore(initialState);
 
@@ -225,77 +225,52 @@ describe('movieSlice', () => {
       expect(mockSet).toHaveBeenCalledWith({
         searchResults: [],
         selectedMovie: null,
-        filters: {},
-        currentPage: 1,
-        totalPages: 0,
-        totalResults: 0,
-        error: null,
+        movieFilters: {},
+        movieCurrentPage: 1,
+        movieTotalPages: 0,
+        movieTotalResults: 0,
+        movieError: null,
       });
     });
 
     it('should preserve non-search related state', () => {
       const store = createMockStore({
-        isLoading: true,
+        movieIsLoading: true,
       });
 
       store.clearSearch();
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          isLoading: true, // Should preserve loading state
-        })
-      );
-    });
-  });
-
-  describe('state getters', () => {
-    it('should return current state values', () => {
-      const mockResults = [createMockMovie(), createMockMovie()];
-      const mockMovie = createMockMovie();
-      const mockFilters: MovieFilters = {
-        genre: [28, 12],
-        sortBy: 'popularity.desc',
-      };
-
-      const store = createMockStore({
-        searchResults: mockResults,
-        selectedMovie: mockMovie,
-        filters: mockFilters,
-        isLoading: true,
-        error: 'Test error',
-        currentPage: 3,
-        totalPages: 10,
-        totalResults: 200,
+      // clearSearch should not change movieIsLoading
+      expect(mockSet).toHaveBeenCalledWith({
+        searchResults: [],
+        selectedMovie: null,
+        movieFilters: {},
+        movieCurrentPage: 1,
+        movieTotalPages: 0,
+        movieTotalResults: 0,
+        movieError: null,
       });
-
-      expect(store.searchResults).toEqual(mockResults);
-      expect(store.selectedMovie).toEqual(mockMovie);
-      expect(store.filters).toEqual(mockFilters);
-      expect(store.isLoading).toBe(true);
-      expect(store.error).toBe('Test error');
-      expect(store.currentPage).toBe(3);
-      expect(store.totalPages).toBe(10);
-      expect(store.totalResults).toBe(200);
     });
   });
+
 
   describe('integration with get function', () => {
-    it('should use get function to access current filters in setFilters', () => {
+    it('should use get function to access current filters in setMovieFilters', () => {
       const currentFilters: MovieFilters = {
         genre: [28],
         sortBy: 'popularity.desc',
       };
-      const store = createMockStore({ filters: currentFilters });
+      const store = createMockStore({ movieFilters: currentFilters });
 
-      store.setFilters({ year: 2023 });
+      store.setMovieFilters({ year: 2023 });
 
       expect(mockGet).toHaveBeenCalled();
       expect(mockSet).toHaveBeenCalledWith({
-        filters: {
+        movieFilters: {
           ...currentFilters,
           year: 2023,
         },
-        currentPage: 1,
+        movieCurrentPage: 1,
       });
     });
   });

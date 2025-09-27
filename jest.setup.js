@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom';
 
+// Mock fetch globally for jsdom
+global.fetch = jest.fn();
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

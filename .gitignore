@@ -1,4 +1,6 @@
 .kilocode
+playwright-report
+test-results
 
 # dependencies
 /node_modules

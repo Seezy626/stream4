@@ -8,7 +8,7 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  moduleNameMapping: {
+  moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -45,7 +45,9 @@ const customJestConfig = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
-    '<rootDir>/tests/e2e/'
+    '<rootDir>/tests/e2e/',
+    '<rootDir>/src/__tests__/mocks/api.ts',
+    '<rootDir>/src/__tests__/utils/test-utils.tsx'
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(lucide-react|@radix-ui)/)'
@@ -56,4 +58,4 @@ const customJestConfig = {
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig);
+export default createJestConfig(customJestConfig);

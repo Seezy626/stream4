@@ -21,7 +21,7 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('bg-destructive');
 
     rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border', 'border-input');
+    expect(screen.getByRole('button')).toHaveClass('border', 'bg-background', 'shadow-xs');
 
     rerender(<Button variant="secondary">Secondary</Button>);
     expect(screen.getByRole('button')).toHaveClass('bg-secondary');
@@ -38,13 +38,13 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('h-9', 'px-4', 'py-2');
 
     rerender(<Button size="sm">Small</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-8', 'px-3', 'text-xs');
+    expect(screen.getByRole('button')).toHaveClass('h-8', 'rounded-md', 'gap-1.5', 'px-3', 'has-[>svg]:px-2.5');
 
     rerender(<Button size="lg">Large</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-10', 'px-8');
+    expect(screen.getByRole('button')).toHaveClass('h-10', 'rounded-md', 'px-6', 'has-[>svg]:px-4');
 
     rerender(<Button size="icon">Icon</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-9', 'w-9');
+    expect(screen.getByRole('button')).toHaveClass('size-9');
   });
 
   it('handles click events', async () => {
@@ -100,7 +100,7 @@ describe('Button', () => {
     render(<Button>Focus Test</Button>);
 
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('focus-visible:outline-none', 'focus-visible:ring-2');
+    expect(button).toHaveClass('outline-none', 'focus-visible:ring-[3px]');
   });
 
   it('handles loading state with disabled styling', () => {

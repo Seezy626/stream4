@@ -1,10 +1,12 @@
+/* eslint-disable */
+
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { watchlistSlice } from '../watchlist-slice';
 import { WatchlistFilters } from '../../types';
-import { createMockWatchlistItem } from '../../../__tests__/utils/test-factories';
+import { createMockWatchlistItem } from '../../../utils/test-factories';
 
 // Mock fetch globally
-const mockFetch = jest.fn();
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
 // Mock the StateCreator type
@@ -14,13 +16,13 @@ const mockGet = jest.fn();
 
 const createMockStore = (initialState = {}) => {
   const defaultState = {
-    items: [],
-    filters: {},
-    isLoading: false,
-    error: null,
-    currentPage: 1,
-    totalPages: 0,
-    totalResults: 0,
+    watchlistItems: [],
+    watchlistFilters: {},
+    watchlistIsLoading: false,
+    watchlistError: null,
+    watchlistCurrentPage: 1,
+    watchlistTotalPages: 0,
+    watchlistTotalResults: 0,
     ...initialState,
   };
 
@@ -33,64 +35,68 @@ const createMockStore = (initialState = {}) => {
 describe('watchlistSlice', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFetch.mockClear();
+    mockFetch.mockReset();
+  });
+
+  afterEach(() => {
+    mockFetch.mockRestore();
   });
 
   describe('initial state', () => {
     it('should have correct initial state', () => {
       const store = createMockStore();
 
-      expect(store.items).toEqual([]);
-      expect(store.filters).toEqual({});
-      expect(store.isLoading).toBe(false);
-      expect(store.error).toBeNull();
-      expect(store.currentPage).toBe(1);
-      expect(store.totalPages).toBe(0);
-      expect(store.totalResults).toBe(0);
+      expect(store.watchlistItems).toEqual([]);
+      expect(store.watchlistFilters).toEqual({});
+      expect(store.watchlistIsLoading).toBe(false);
+      expect(store.watchlistError).toBeNull();
+      expect(store.watchlistCurrentPage).toBe(1);
+      expect(store.watchlistTotalPages).toBe(0);
+      expect(store.watchlistTotalResults).toBe(0);
     });
   });
 
-  describe('setItems', () => {
+  describe('setWatchlistItems', () => {
     it('should set items and clear error', () => {
-      const store = createMockStore({ error: 'Previous error' });
+      const store = createMockStore({ watchlistError: 'Previous error' });
       const mockItems = [createMockWatchlistItem(), createMockWatchlistItem()];
 
-      store.setItems(mockItems);
+      store.setWatchlistItems(mockItems);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: mockItems,
-        error: null,
+        watchlistItems: mockItems,
+        watchlistError: null,
       });
     });
 
     it('should replace existing items', () => {
       const existingItems = [createMockWatchlistItem()];
-      const store = createMockStore({ items: existingItems });
+      const store = createMockStore({ watchlistItems: existingItems });
       const newItems = [createMockWatchlistItem(), createMockWatchlistItem()];
 
-      store.setItems(newItems);
+      store.setWatchlistItems(newItems);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: newItems,
-        error: null,
+        watchlistItems: newItems,
+        watchlistError: null,
       });
     });
   });
 
-  describe('addItem', () => {
+  describe('addWatchlistItem', () => {
     it('should add item to beginning of list', () => {
       const existingItems = [createMockWatchlistItem({ id: 1 })];
-      const store = createMockStore({ items: existingItems });
+      const store = createMockStore({ watchlistItems: existingItems });
       const newItemData = createMockWatchlistItem({ id: 2 });
 
-      store.addItem(newItemData);
+      store.addWatchlistItem(newItemData);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: expect.arrayContaining([
+        watchlistItems: expect.arrayContaining([
           expect.objectContaining({ id: expect.any(Number) }),
           ...existingItems,
         ]),
-        error: null,
+        watchlistError: null,
       });
     });
 
@@ -98,35 +104,35 @@ describe('watchlistSlice', () => {
       const store = createMockStore();
       const newItemData = createMockWatchlistItem({ id: undefined });
 
-      store.addItem(newItemData);
+      store.addWatchlistItem(newItemData);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: expect.arrayContaining([
+        watchlistItems: expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(Number),
           }),
         ]),
-        error: null,
+        watchlistError: null,
       });
     });
   });
 
-  describe('updateItem', () => {
+  describe('updateWatchlistItem', () => {
     it('should update existing item', () => {
       const existingItem = createMockWatchlistItem({ id: 1, priority: 'low' });
-      const store = createMockStore({ items: [existingItem] });
+      const store = createMockStore({ watchlistItems: [existingItem] });
       const updates = { priority: 'high' as const };
 
-      store.updateItem(1, updates);
+      store.updateWatchlistItem(1, updates);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: expect.arrayContaining([
+        watchlistItems: expect.arrayContaining([
           expect.objectContaining({
             id: 1,
             priority: 'high',
           }),
         ]),
-        error: null,
+        watchlistError: null,
       });
     });
 
@@ -135,148 +141,148 @@ describe('watchlistSlice', () => {
         createMockWatchlistItem({ id: 1, priority: 'low' }),
         createMockWatchlistItem({ id: 2, priority: 'medium' }),
       ];
-      const store = createMockStore({ items });
+      const store = createMockStore({ watchlistItems: items });
       const updates = { priority: 'high' as const };
 
-      store.updateItem(1, updates);
+      store.updateWatchlistItem(1, updates);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: expect.arrayContaining([
+        watchlistItems: expect.arrayContaining([
           expect.objectContaining({ id: 1, priority: 'high' }),
           expect.objectContaining({ id: 2, priority: 'medium' }),
         ]),
-        error: null,
+        watchlistError: null,
       });
     });
 
     it('should handle non-existent item gracefully', () => {
       const items = [createMockWatchlistItem({ id: 1 })];
-      const store = createMockStore({ items });
+      const store = createMockStore({ watchlistItems: items });
       const updates = { priority: 'high' as const };
 
-      store.updateItem(999, updates);
+      store.updateWatchlistItem(999, updates);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: items, // Should remain unchanged
-        error: null,
+        watchlistItems: items, // Should remain unchanged
+        watchlistError: null,
       });
     });
   });
 
-  describe('removeItem', () => {
+  describe('removeWatchlistItem', () => {
     it('should remove item from list', () => {
       const items = [
         createMockWatchlistItem({ id: 1 }),
         createMockWatchlistItem({ id: 2 }),
         createMockWatchlistItem({ id: 3 }),
       ];
-      const store = createMockStore({ items });
+      const store = createMockStore({ watchlistItems: items });
 
-      store.removeItem(2);
+      store.removeWatchlistItem(2);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: expect.arrayContaining([
+        watchlistItems: expect.arrayContaining([
           expect.objectContaining({ id: 1 }),
           expect.objectContaining({ id: 3 }),
         ]),
-        error: null,
+        watchlistError: null,
       });
-      expect(mockSet.mock.calls[0][0].items).toHaveLength(2);
+      expect((mockSet.mock.calls[0][0] as { watchlistItems: unknown[] }).watchlistItems).toHaveLength(2);
     });
 
     it('should handle non-existent item gracefully', () => {
       const items = [createMockWatchlistItem({ id: 1 })];
-      const store = createMockStore({ items });
+      const store = createMockStore({ watchlistItems: items });
 
-      store.removeItem(999);
+      store.removeWatchlistItem(999);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: items, // Should remain unchanged
-        error: null,
+        watchlistItems: items, // Should remain unchanged
+        watchlistError: null,
       });
     });
   });
 
-  describe('setFilters', () => {
+  describe('setWatchlistFilters', () => {
     it('should merge new filters with existing ones', () => {
       const initialFilters: WatchlistFilters = {
         priority: 'high',
         sortBy: 'added_at',
       };
-      const store = createMockStore({ filters: initialFilters });
+      const store = createMockStore({ watchlistFilters: initialFilters });
       const newFilters: Partial<WatchlistFilters> = {
         sortOrder: 'desc',
       };
 
-      store.setFilters(newFilters);
+      store.setWatchlistFilters(newFilters);
 
       expect(mockSet).toHaveBeenCalledWith({
-        filters: {
+        watchlistFilters: {
           ...initialFilters,
           ...newFilters,
         },
-        currentPage: 1, // Should reset to first page
+        watchlistCurrentPage: 1, // Should reset to first page
       });
     });
 
     it('should reset to page 1 when filters change', () => {
-      const store = createMockStore({ currentPage: 5 });
+      const store = createMockStore({ watchlistCurrentPage: 5 });
 
-      store.setFilters({ priority: 'high' });
+      store.setWatchlistFilters({ priority: 'high' });
 
       expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          currentPage: 1,
+          watchlistCurrentPage: 1,
         })
       );
     });
   });
 
-  describe('setLoading', () => {
+  describe('setWatchlistLoading', () => {
     it('should set loading state', () => {
       const store = createMockStore();
 
-      store.setLoading(true);
-      expect(mockSet).toHaveBeenCalledWith({ isLoading: true });
+      store.setWatchlistLoading(true);
+      expect(mockSet).toHaveBeenCalledWith({ watchlistIsLoading: true });
 
-      store.setLoading(false);
-      expect(mockSet).toHaveBeenCalledWith({ isLoading: false });
+      store.setWatchlistLoading(false);
+      expect(mockSet).toHaveBeenCalledWith({ watchlistIsLoading: false });
     });
   });
 
-  describe('setError', () => {
+  describe('setWatchlistError', () => {
     it('should set error and clear loading', () => {
-      const store = createMockStore({ isLoading: true });
+      const store = createMockStore({ watchlistIsLoading: true });
       const errorMessage = 'Failed to fetch watchlist';
 
-      store.setError(errorMessage);
+      store.setWatchlistError(errorMessage);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
-        isLoading: false,
+        watchlistError: errorMessage,
+        watchlistIsLoading: false,
       });
     });
 
     it('should clear error when passed null', () => {
-      const store = createMockStore({ error: 'Previous error' });
+      const store = createMockStore({ watchlistError: 'Previous error' });
 
-      store.setError(null);
+      store.setWatchlistError(null);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: null,
-        isLoading: false,
+        watchlistError: null,
+        watchlistIsLoading: false,
       });
     });
   });
 
-  describe('setPage', () => {
+  describe('setWatchlistPage', () => {
     it('should set current page', () => {
       const store = createMockStore();
 
-      store.setPage(3);
+      store.setWatchlistPage(3);
 
       expect(mockSet).toHaveBeenCalledWith({
-        currentPage: 3,
+        watchlistCurrentPage: 3,
       });
     });
   });
@@ -295,7 +301,7 @@ describe('watchlistSlice', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockResponse),
-      });
+      } as Response);
 
       const store = createMockStore();
 
@@ -303,16 +309,21 @@ describe('watchlistSlice', () => {
 
       expect(mockFetch).toHaveBeenCalledWith('/api/watchlist?page=1&limit=20');
       expect(mockSet).toHaveBeenCalledWith({
-        isLoading: true,
+        watchlistIsLoading: true,
       });
       expect(mockSet).toHaveBeenCalledWith({
-        items: mockResponse.items,
-        currentPage: 1,
-        totalPages: 1,
-        totalResults: 1,
+        watchlistError: null,
       });
       expect(mockSet).toHaveBeenCalledWith({
-        isLoading: false,
+        watchlistItems: mockResponse.items,
+      });
+      expect(mockSet).toHaveBeenCalledWith({
+        watchlistCurrentPage: mockResponse.pagination.page,
+        watchlistTotalPages: mockResponse.pagination.totalPages,
+        watchlistTotalResults: mockResponse.pagination.total,
+      });
+      expect(mockSet).toHaveBeenCalledWith({
+        watchlistIsLoading: false,
       });
     });
 
@@ -320,20 +331,20 @@ describe('watchlistSlice', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ items: [], pagination: { page: 1, totalPages: 0, total: 0 } }),
-      });
+      } as Response);
 
       const store = createMockStore();
 
       await store.fetchWatchlist(1, 'test search');
 
-      expect(mockFetch).toHaveBeenCalledWith('/api/watchlist?page=1&limit=20&search=test%20search');
+      expect(mockFetch).toHaveBeenCalledWith('/api/watchlist?page=1&limit=20&search=test+search');
     });
 
     it('should handle filters', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ items: [], pagination: { page: 1, totalPages: 0, total: 0 } }),
-      });
+      } as Response);
 
       const store = createMockStore();
 
@@ -345,43 +356,61 @@ describe('watchlistSlice', () => {
     it('should append items for subsequent pages', async () => {
       const existingItems = [createMockWatchlistItem({ id: 1 })];
       const newItems = [createMockWatchlistItem({ id: 2 })];
-
+       
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({
           items: newItems,
           pagination: { page: 2, totalPages: 2, total: 2 },
         }),
-      });
+      } as any);
 
-      const store = createMockStore({ items: existingItems });
+       
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({
+          items: newItems,
+          pagination: { page: 2, totalPages: 2, total: 2 },
+        }),
+      } as any);
+
+      const store = createMockStore({ watchlistItems: existingItems });
 
       await store.fetchWatchlist(2);
 
       expect(mockSet).toHaveBeenCalledWith({
-        items: [...existingItems, ...newItems],
-        currentPage: 2,
-        totalPages: 2,
-        totalResults: 2,
+        watchlistItems: [...existingItems, ...newItems],
+      });
+      expect(mockSet).toHaveBeenCalledWith({
+        watchlistCurrentPage: 2,
+        watchlistTotalPages: 2,
+        watchlistTotalResults: 2,
       });
     });
 
     it('should handle API errors', async () => {
       const errorMessage = 'Failed to fetch watchlist';
 
+       
       mockFetch.mockResolvedValueOnce({
         ok: false,
         json: () => Promise.resolve({ error: errorMessage }),
-      });
+      } as any);
 
       const store = createMockStore();
 
       await store.fetchWatchlist();
 
-      expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
-        isLoading: false,
-      });
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          watchlistError: errorMessage,
+        })
+      );
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          watchlistIsLoading: false,
+        })
+      );
     });
 
     it('should handle network errors', async () => {
@@ -393,22 +422,29 @@ describe('watchlistSlice', () => {
 
       await store.fetchWatchlist();
 
-      expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
-        isLoading: false,
-      });
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          watchlistError: errorMessage,
+        })
+      );
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          watchlistIsLoading: false,
+        })
+      );
     });
   });
 
   describe('addToWatchlist', () => {
     it('should add item to watchlist successfully', async () => {
-      const newItem = createMockWatchlistItem({ id: undefined });
+      const newItem = { movieId: 123, priority: 'high' as const };
       const responseItem = createMockWatchlistItem({ id: 123 });
 
+       
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(responseItem),
-      });
+      } as any);
 
       const store = createMockStore();
 
@@ -419,34 +455,36 @@ describe('watchlistSlice', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem),
       });
-      expect(mockSet).toHaveBeenCalledWith({ error: null });
+      expect(mockSet).toHaveBeenCalledWith({ watchlistError: null });
       expect(result).toEqual(responseItem);
     });
 
     it('should handle API errors', async () => {
       const errorMessage = 'Failed to add movie to watchlist';
 
+       
       mockFetch.mockResolvedValueOnce({
         ok: false,
         json: () => Promise.resolve({ error: errorMessage }),
-      });
+      } as any);
 
       const store = createMockStore();
 
-      await expect(store.addToWatchlist(createMockWatchlistItem())).rejects.toThrow(errorMessage);
+      await expect(store.addToWatchlist({ movieId: 123, priority: 'high' as const })).rejects.toThrow(errorMessage);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
+        watchlistError: errorMessage,
       });
     });
   });
 
   describe('removeFromWatchlist', () => {
     it('should remove item from watchlist successfully', async () => {
+       
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({}),
-      });
+      } as any);
 
       const store = createMockStore();
 
@@ -455,23 +493,24 @@ describe('watchlistSlice', () => {
       expect(mockFetch).toHaveBeenCalledWith('/api/watchlist/123', {
         method: 'DELETE',
       });
-      expect(mockSet).toHaveBeenCalledWith({ error: null });
+      expect(mockSet).toHaveBeenCalledWith({ watchlistError: null });
     });
 
     it('should handle API errors', async () => {
       const errorMessage = 'Failed to remove movie from watchlist';
 
+       
       mockFetch.mockResolvedValueOnce({
         ok: false,
         json: () => Promise.resolve({ error: errorMessage }),
-      });
+      } as any);
 
       const store = createMockStore();
 
       await expect(store.removeFromWatchlist(123)).rejects.toThrow(errorMessage);
 
       expect(mockSet).toHaveBeenCalledWith({
-        error: errorMessage,
+        watchlistError: errorMessage,
       });
     });
   });

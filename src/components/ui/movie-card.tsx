@@ -95,7 +95,7 @@ export function MovieCard({
               variant="secondary"
               className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white touch-target btn-hover"
               onClick={handleRemoveFromWatchlist}
-              aria-label="Remove from watched"
+              aria-label={`Remove "${movie.title}" from watched (desktop)`}
             >
               <Check className="h-4 w-4" />
             </Button>
@@ -105,7 +105,7 @@ export function MovieCard({
               variant="secondary"
               className="h-8 w-8 bg-blue-600 hover:bg-blue-700 text-white touch-target btn-hover"
               onClick={handleMarkAsWatched}
-              aria-label="Mark as watched"
+              aria-label={`Mark "${movie.title}" as watched (desktop)`}
             >
               <Check className="h-4 w-4" />
             </Button>
@@ -115,7 +115,7 @@ export function MovieCard({
               variant="secondary"
               className="h-8 w-8 bg-black/70 hover:bg-black/90 text-white touch-target btn-hover"
               onClick={handleAddToWatchlist}
-              aria-label="Add to watchlist"
+              aria-label={`Add "${movie.title}" to watchlist (desktop)`}
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -130,7 +130,7 @@ export function MovieCard({
               variant="secondary"
               className="h-10 w-10 bg-green-600 hover:bg-green-700 text-white touch-target btn-hover"
               onClick={handleRemoveFromWatchlist}
-              aria-label="Remove from watched"
+              aria-label={`Remove "${movie.title}" from watched (mobile)`}
             >
               <Check className="h-5 w-5" />
             </Button>
@@ -140,7 +140,7 @@ export function MovieCard({
               variant="secondary"
               className="h-10 w-10 bg-blue-600 hover:bg-blue-700 text-white touch-target btn-hover"
               onClick={handleMarkAsWatched}
-              aria-label="Mark as watched"
+              aria-label={`Mark "${movie.title}" as watched (mobile)`}
             >
               <Check className="h-5 w-5" />
             </Button>
@@ -150,7 +150,7 @@ export function MovieCard({
               variant="secondary"
               className="h-10 w-10 bg-black/70 hover:bg-black/90 text-white touch-target btn-hover"
               onClick={handleAddToWatchlist}
-              aria-label="Add to watchlist"
+              aria-label={`Add "${movie.title}" to watchlist (mobile)`}
             >
               <Plus className="h-5 w-5" />
             </Button>

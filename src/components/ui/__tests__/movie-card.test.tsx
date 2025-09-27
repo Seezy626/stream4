@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MovieCard } from '../movie-card';
-import { createMockMovie } from '../../../__tests__/utils/test-factories';
+import { createMockMovie } from '../../../utils/test-factories';
 
 const user = userEvent.setup();
 
@@ -36,8 +36,8 @@ describe('MovieCard', () => {
     const movieWithoutPoster = createMockMovie({ poster_path: null });
     render(<MovieCard movie={movieWithoutPoster} />);
 
-    expect(screen.getByText(mockMovie.title)).toBeInTheDocument();
-    expect(screen.queryByAltText(`${mockMovie.title} movie poster`)).not.toBeInTheDocument();
+    expect(screen.getByText(movieWithoutPoster.title)).toBeInTheDocument();
+    expect(screen.queryByAltText(`${movieWithoutPoster.title} movie poster`)).not.toBeInTheDocument();
   });
 
   it('handles image error gracefully', async () => {
@@ -55,7 +55,7 @@ describe('MovieCard', () => {
   it('shows add to watchlist button when not in watchlist', () => {
     render(<MovieCard movie={mockMovie} isInWatchlist={false} />);
 
-    const addButton = screen.getByLabelText('Add to watchlist');
+    const addButton = screen.getByLabelText('Add "Test Movie" to watchlist (mobile)');
     expect(addButton).toBeInTheDocument();
     expect(addButton).toBeVisible();
   });
@@ -63,7 +63,7 @@ describe('MovieCard', () => {
   it('shows mark as watched button when in watchlist but not watched', () => {
     render(<MovieCard movie={mockMovie} isInWatchlist={true} isWatched={false} />);
 
-    const watchedButton = screen.getByLabelText('Mark as watched');
+    const watchedButton = screen.getByLabelText('Mark "Test Movie" as watched (mobile)');
     expect(watchedButton).toBeInTheDocument();
     expect(watchedButton).toBeVisible();
   });
@@ -71,7 +71,7 @@ describe('MovieCard', () => {
   it('shows remove from watched button when watched', () => {
     render(<MovieCard movie={mockMovie} isInWatchlist={true} isWatched={true} />);
 
-    const removeButton = screen.getByLabelText('Remove from watched');
+    const removeButton = screen.getByLabelText('Remove "Test Movie" from watched (mobile)');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
   });
@@ -86,7 +86,7 @@ describe('MovieCard', () => {
       />
     );
 
-    const addButton = screen.getByLabelText('Add to watchlist');
+    const addButton = screen.getByLabelText('Add "Test Movie" to watchlist (mobile)');
     await user.click(addButton);
 
     expect(onAddToWatchlist).toHaveBeenCalledWith(mockMovie.id);
@@ -104,7 +104,7 @@ describe('MovieCard', () => {
       />
     );
 
-    const watchedButton = screen.getByLabelText('Mark as watched');
+    const watchedButton = screen.getByLabelText('Mark "Test Movie" as watched (mobile)');
     await user.click(watchedButton);
 
     expect(onMarkAsWatched).toHaveBeenCalledWith(mockMovie.id);
@@ -122,7 +122,7 @@ describe('MovieCard', () => {
       />
     );
 
-    const removeButton = screen.getByLabelText('Remove from watched');
+    const removeButton = screen.getByLabelText('Remove "Test Movie" from watched (mobile)');
     await user.click(removeButton);
 
     expect(onRemoveFromWatchlist).toHaveBeenCalledWith(mockMovie.id);
@@ -145,7 +145,7 @@ describe('MovieCard', () => {
       />
     );
 
-    const removeButton = screen.getByLabelText('Remove from watched');
+    const removeButton = screen.getByLabelText('Remove "Test Movie" from watched (mobile)');
     await user.click(removeButton);
 
     expect(onAddToWatchlist).not.toHaveBeenCalled();
@@ -178,7 +178,7 @@ describe('MovieCard', () => {
     const ratingBadge = screen.getByLabelText(`Rating: ${mockMovie.vote_average.toFixed(1)} out of 10`);
     expect(ratingBadge).toBeInTheDocument();
 
-    const addButton = screen.getByLabelText('Add to watchlist');
+    const addButton = screen.getByLabelText('Add "Test Movie" to watchlist (mobile)');
     expect(addButton).toBeInTheDocument();
   });
 
@@ -186,7 +186,7 @@ describe('MovieCard', () => {
     render(<MovieCard movie={mockMovie} isInWatchlist={false} />);
 
     // Mobile button should be visible on small screens
-    const mobileButton = screen.getByLabelText('Add to watchlist');
+    const mobileButton = screen.getByLabelText('Add "Test Movie" to watchlist (mobile)');
     expect(mobileButton).toBeInTheDocument();
   });
 
