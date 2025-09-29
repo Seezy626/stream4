@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { SignUpForm } from "@/components/auth/signup-form"
@@ -11,8 +11,13 @@ export default function SignUpPage() {
   const router = useRouter()
   const [showSignIn, setShowSignIn] = useState(false)
 
+  useEffect(() => {
+    if (showSignIn) {
+      router.push('/auth/signin')
+    }
+  }, [showSignIn, router])
+
   if (showSignIn) {
-    router.push('/auth/signin')
     return null
   }
 

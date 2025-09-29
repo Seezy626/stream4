@@ -2,7 +2,7 @@ import { pgTable, serial, text, integer, timestamp, varchar, decimal, json } fro
 
 // Users table (for authentication)
 export const users = pgTable('users', {
-  id: varchar('id', { length: 255 }).primaryKey(),
+  id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   emailVerified: timestamp('email_verified'),
@@ -14,7 +14,7 @@ export const users = pgTable('users', {
 
 // Accounts table (for OAuth providers)
 export const accounts = pgTable('accounts', {
-  userId: varchar('user_id', { length: 255 }).references(() => users.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   type: varchar('type', { length: 255 }).notNull(),
   provider: varchar('provider', { length: 255 }).notNull(),
   providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
@@ -30,7 +30,7 @@ export const accounts = pgTable('accounts', {
 // Sessions table (for session management)
 export const sessions = pgTable('sessions', {
   sessionToken: varchar('session_token', { length: 255 }).primaryKey(),
-  userId: varchar('user_id', { length: 255 }).references(() => users.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   expires: timestamp('expires').notNull(),
 });
 
@@ -60,7 +60,7 @@ export const movies = pgTable('movies', {
 // Watch History table
 export const watchHistory = pgTable('watch_history', {
   id: serial('id').primaryKey(),
-  userId: varchar('user_id', { length: 255 }).references(() => users.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   movieId: integer('movie_id').references(() => movies.id).notNull(),
   watchedAt: timestamp('watched_at').notNull(),
   rating: integer('rating'), // 1-10 scale
@@ -72,7 +72,7 @@ export const watchHistory = pgTable('watch_history', {
 // Watchlist table
 export const watchlist = pgTable('watchlist', {
   id: serial('id').primaryKey(),
-  userId: varchar('user_id', { length: 255 }).references(() => users.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   movieId: integer('movie_id').references(() => movies.id).notNull(),
   addedAt: timestamp('added_at').defaultNow().notNull(),
   priority: varchar('priority', { length: 20 }).default('medium'), // low, medium, high

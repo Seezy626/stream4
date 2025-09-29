@@ -4,7 +4,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { compare } from 'bcryptjs';
 import { eq } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
 import { db } from './db';
 import { users, accounts, sessions, verificationTokens } from './schema';
 
@@ -90,7 +89,6 @@ export const authOptions: NextAuthOptions = {
 
         if (!existingUser[0]) {
           await db.insert(users).values({
-            id: randomUUID(),
             email: user.email!,
             name: user.name,
             image: user.image,
